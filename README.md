@@ -1,6 +1,6 @@
 # Hola, soy Mishel 👋
 
-Este es mi repo de **Desarrollo de Aplicaciones Móviles** en TECSUP.
+Este es mi repo de **Desarrollo de Aplicaciones Móviles** en TECSUP, con el docente **Juan León Suiyon**.
 
 Voy a ir dejando acá los laboratorios de las 16 semanas. La idea es que se entienda qué hice y, ojalá, que alguien aprenda alguito viéndolo.
 
