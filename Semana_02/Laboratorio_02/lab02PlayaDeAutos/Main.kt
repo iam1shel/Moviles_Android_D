@@ -1,3 +1,7 @@
+package com.yldefonso.playadeautos_rojastuesta
+
+import kotlin.math.round
+
 enum class TipoVehiculo(val etiqueta: String) {
     MOTO("moto"),
     AUTO("auto"),
@@ -16,16 +20,80 @@ data class Registro(
     val nombreCliente: String,
 )
 
+data class DetalleHora(
+    val hora: Int,
+    val tarifa: Double,
+    val recargo: Double,
+    val importe: Double,
+)
+
+data class CalculoCobro(
+    val detalles: List<DetalleHora>,
+    val subtotal: Double,
+    val descuento: Double,
+    val totalFinal: Double,
+)
+
 class RepositorioEnMemoria {
     val registros = mutableListOf<Registro>()
     val visitasPorCliente = mutableMapOf<String, Int>()
+    val calculos = mutableListOf<CalculoCobro>()
 
     fun guardar(registro: Registro) {
         registros += registro
         val claveCliente = registro.nombreCliente.lowercase()
         visitasPorCliente[claveCliente] = (visitasPorCliente[claveCliente] ?: 0) + 1
+        val numeroVisita = visitasPorCliente.getValue(claveCliente)
+        calculos += calcularCobro(registro, numeroVisita)
     }
 }
+
+fun tarifaBase(tipo: TipoVehiculo): Double = when (tipo) {
+    TipoVehiculo.MOTO -> 2.00
+    TipoVehiculo.AUTO -> 4.00
+    TipoVehiculo.CAMIONETA -> 10.00
+}
+
+fun recargoDeHora(numeroHora: Int): Double = when {
+    numeroHora <= 2 -> 0.0
+    numeroHora <= 4 -> 20.0
+    else -> 50.0
+}
+
+fun detallePorHora(registro: Registro): List<DetalleHora> {
+    val tarifa = tarifaBase(registro.tipo)
+    return (1..registro.horas).map { hora ->
+        val recargo = recargoDeHora(hora)
+        DetalleHora(
+            hora = hora,
+            tarifa = tarifa,
+            recargo = recargo,
+            importe = soles(tarifa * (1 + recargo / 100.0)),
+        )
+    }
+}
+
+fun subtotal(registro: Registro): Double =
+    soles(detallePorHora(registro).sumOf { it.importe })
+
+fun descuento(registro: Registro, numeroVisita: Int): Double {
+    if (numeroVisita < 5) return 0.0
+    return soles(subtotal(registro) * 0.10)
+}
+
+fun totalFinal(registro: Registro, numeroVisita: Int): Double =
+    soles(subtotal(registro) - descuento(registro, numeroVisita))
+
+fun calcularCobro(registro: Registro, numeroVisita: Int): CalculoCobro {
+    return CalculoCobro(
+        detalles = detallePorHora(registro),
+        subtotal = subtotal(registro),
+        descuento = descuento(registro, numeroVisita),
+        totalFinal = totalFinal(registro, numeroVisita),
+    )
+}
+
+private fun soles(valor: Double): Double = round(valor * 100.0) / 100.0
 
 fun main() {
     val repositorio = RepositorioEnMemoria()
