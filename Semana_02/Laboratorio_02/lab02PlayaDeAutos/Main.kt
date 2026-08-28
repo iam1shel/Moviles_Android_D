@@ -1,5 +1,6 @@
 package com.yldefonso.playadeautos_rojastuesta
 
+import java.util.Locale
 import kotlin.math.round
 
 enum class TipoVehiculo(val etiqueta: String) {
@@ -93,7 +94,25 @@ fun calcularCobro(registro: Registro, numeroVisita: Int): CalculoCobro {
     )
 }
 
+fun imprimirTarifaBasica(registro: Registro, calculo: CalculoCobro) {
+    println()
+    println("TARIFA BASICA: ${registro.placa}")
+    println("Hora\tTarifa\tRecargo\tImporte")
+    for (detalle in calculo.detalles) {
+        println(
+            "${detalle.hora}\t${solesTexto(detalle.tarifa)}\t${detalle.recargo.toInt()}%\t${solesTexto(detalle.importe)}"
+        )
+    }
+    println("Total\t\t\t${solesTexto(calculo.subtotal)}")
+    if (calculo.descuento > 0.0) {
+        println("Descuento cliente frecuente (10%)\t${solesTexto(calculo.descuento)}")
+        println("Total a pagar\t\t\t${solesTexto(calculo.totalFinal)}")
+    }
+}
+
 private fun soles(valor: Double): Double = round(valor * 100.0) / 100.0
+
+private fun solesTexto(valor: Double): String = "%.2f".format(Locale.US, valor)
 
 fun main() {
     val repositorio = RepositorioEnMemoria()
@@ -119,14 +138,14 @@ fun main() {
         print("Nombre del cliente: ")
         val nombreCliente = leerTextoNoVacio()
 
-        repositorio.guardar(
-            Registro(
-                placa = placa,
-                tipo = tipo,
-                horas = horas,
-                nombreCliente = nombreCliente,
-            )
+        val registro = Registro(
+            placa = placa,
+            tipo = tipo,
+            horas = horas,
+            nombreCliente = nombreCliente,
         )
+        repositorio.guardar(registro)
+        imprimirTarifaBasica(registro, repositorio.calculos.last())
 
         indice++
     }
