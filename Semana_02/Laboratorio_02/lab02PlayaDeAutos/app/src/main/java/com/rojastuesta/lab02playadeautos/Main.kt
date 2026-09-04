@@ -30,19 +30,21 @@ fun leerSiNo(mensaje: String): Boolean {
 
 fun main() {
     println("=========================================")
-    println("   PLAYA DE AUTOS - TECSUP   ")
+    println(" PLAYA DE AUTOS - TECSUP ")
     println("=========================================")
 
-    val playa = PlayaDeAutos()
+    val aforo = leerEntero("Aforo de la playa (espacios): ")
+    val playa = PlayaDeAutos(aforo)
+
     val nombreCliente = leerTexto("Nombre del cliente: ")
     val esClienteFrecuente = leerSiNo("Es cliente frecuente?")
     val horas = leerEntero("Cuantas horas se quedara? ")
-    val cantidad = leerEntero("Cuantos vehiculos se van a registrar? ")
 
-    var indice = 0
-    while (indice < cantidad) {
+    var seguir = true
+    while (seguir && playa.hayEspacio()) {
         println()
-        println("--- Vehiculo ${indice + 1} de $cantidad ---")
+        println("Ocupados: ${playa.ocupados()} / ${playa.aforo}  |  Libres: ${playa.espaciosLibres()}")
+        println("--- Registrar vehiculo ---")
         try {
             val vehiculo = Vehiculo(
                 placa = leerTexto("Placa: "),
@@ -52,9 +54,15 @@ fun main() {
                 nombreCliente = nombreCliente
             )
             playa.agregarVehiculo(vehiculo)
-            indice++
         } catch (e: IllegalArgumentException) {
             println("Error: ${e.message}")
+        }
+
+        if (!playa.hayEspacio()) {
+            println("Sin espacio. Ya llegaste al tope.")
+            seguir = false
+        } else {
+            seguir = leerSiNo("Registrar otro vehiculo?")
         }
     }
 

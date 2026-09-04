@@ -1,11 +1,30 @@
 package com.rojastuesta.lab02playadeautos
 
-class PlayaDeAutos {
+class PlayaDeAutos(val aforo: Int) {
     private val vehiculos = mutableListOf<Vehiculo>()
 
-    fun agregarVehiculo(vehiculo: Vehiculo) {
+    init {
+        require(aforo >= 1) { "El aforo debe ser al menos 1." }
+    }
+
+    fun ocupados(): Int = vehiculos.size
+
+    fun espaciosLibres(): Int = aforo - ocupados()
+
+    fun hayEspacio(): Boolean = ocupados() < aforo
+
+    fun agregarVehiculo(vehiculo: Vehiculo): Boolean {
+        if (!hayEspacio()) {
+            println("Playa llena. Aforo: $aforo. Ocupados: ${ocupados()}")
+            return false
+        }
         vehiculos.add(vehiculo)
         println("Vehiculo agregado: ${vehiculo.placa}")
+        println("Ocupados: ${ocupados()} / $aforo  |  Libres: ${espaciosLibres()}")
+        if (!hayEspacio()) {
+            println("Sin espacio. Ya llegaste al tope.")
+        }
+        return true
     }
 
     fun mostrarBoletas() {
@@ -55,6 +74,11 @@ class PlayaDeAutos {
             println(String.format("%-30s S/ %8.2f", "Total:", total))
             println(String.format("%-30s S/ %8.2f", "IGV (18%):", igv))
             println(String.format("%-30s S/ %8.2f", "MONTO TOTAL A PAGAR:", totalPagar))
+            println(String.format("Vehiculos de este cliente: %d", delCliente.size))
+            println(String.format("Aforo de la playa: %d", aforo))
+            println(String.format("Ocupados ahora: %d", ocupados()))
+            println(String.format("Espacios libres: %d", espaciosLibres()))
+            println("=".repeat(54))
         }
     }
 }
