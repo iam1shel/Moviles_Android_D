@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.rojastuesta.lab03registroproducto.ui.theme.Lab03RegistroProductoTheme
+import androidx.compose.ui.graphics.Color
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -124,6 +125,11 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "✓ Producto registrado correctamente",
+                    color = Color(0xFF2E7D32)
+                )
             }
         }
     }
