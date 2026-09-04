@@ -24,11 +24,14 @@ class Vehiculo(
         require(horas >= 1) { "Las horas deben ser al menos 1." }
         require(nombreCliente.isNotBlank()) { "El nombre del cliente no puede estar vacio." }
         val tipoOk = tipo.trim().lowercase()
-        require(tipoOk == "moto" || tipoOk == "auto" || tipoOk == "camioneta") {
-            "Tipo de vehiculo no valido. Use moto, auto o camioneta."
+        require(
+            tipoOk == "moto" || tipoOk == "auto" ||
+                    tipoOk == "camioneta" || tipoOk == "trailer" || tipoOk == "tráiler"
+        ) {
+            "Tipo de vehiculo no valido. Use moto, auto, camioneta o trailer."
         }
         this.placa = placa.trim().uppercase()
-        this.tipo = tipoOk
+        this.tipo = if (tipoOk == "tráiler") "trailer" else tipoOk
         this.horas = horas
         this.nombreCliente = nombreCliente.trim()
     }
@@ -38,6 +41,7 @@ class Vehiculo(
             "moto" -> 2.00
             "auto" -> 4.00
             "camioneta" -> 10.00
+            "trailer" -> 20.00
             else -> 0.0
         }
     }
