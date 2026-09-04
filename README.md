@@ -24,12 +24,12 @@
 
 Esto es lo que voy a ir llenando. Si entras y `main` se ve vacío, es normal: el código está en las otras ramas.
 
-La **semana 01** vive solo en `sin-ia`. A partir de la **semana 02** se parten las ramas.
+La **semana 01** la subí solo en `sin-ia`. Desde la **semana 02** uso las dos ramas.
 
 | # | Laboratorio | sin-ia | con-ia |
 | :---: | --- | :---: | :---: |
 | 01 | [Android Studio y GitHub](https://github.com/iam1shel/Moviles_Android_D/tree/sin-ia/Semana_01/Laboratorio_01) | listo | — |
-| 02 | [R1 Carrito](https://github.com/iam1shel/Moviles_Android_D/tree/sin-ia/Semana_02/R1) · [R2 Playa](https://github.com/iam1shel/Moviles_Android_D/tree/sin-ia/Semana_02/R2) | listo | listo |
+| 02 | [Semana 02](https://github.com/iam1shel/Moviles_Android_D/tree/sin-ia/Semana_02) | listo | listo |
 | 03 | Semana 03 | en proceso | en proceso |
 | 04 | Semana 04 | — | — |
 | 05 | Semana 05 | — | — |
@@ -50,6 +50,6 @@ La **semana 01** vive solo en `sin-ia`. A partir de la **semana 02** se parten l
 
 <br>
 
-En `sin-ia` subo lo que hago yo. En `con-ia` dejo la versión donde sí usé IA. Las ramas se dividen desde la semana 02; el Lab 01 está solo en `sin-ia`. `main` se queda como esta portada.
+En `sin-ia` subo lo que hago yo. En `con-ia` va lo que hice con IA. Las ramas se dividen desde la semana 02; el Lab 01 está solo en `sin-ia`. `main` es esta portada.
 
 </details>
