@@ -26,9 +26,9 @@ Esto es lo que voy a ir llenando. Si entras y `main` se ve vacío, es normal: el
 
 | # | Laboratorio | sin-ia | con-ia |
 | :---: | --- | :---: | :---: |
-| 01 | [Android Studio y GitHub](https://github.com/iam1shel/Moviles_Android_D/tree/sin-ia/Semana_01/Laboratorio_01) | en proceso | — |
-| 02 | Semana 02 | — | — |
-| 03 | Semana 03 | — | — |
+| 01 | [Android Studio y GitHub](https://github.com/iam1shel/Moviles_Android_D/tree/sin-ia/Semana_01/Laboratorio_01) | listo | listo |
+| 02 | [Carrito y Playa de autos](https://github.com/iam1shel/Moviles_Android_D/tree/sin-ia/Semana_02/Laboratorio_02) | listo | listo |
+| 03 | Semana 03 | en proceso | en proceso |
 | 04 | Semana 04 | — | — |
 | 05 | Semana 05 | — | — |
 | 06 | Semana 06 | — | — |
