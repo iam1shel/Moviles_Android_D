@@ -45,12 +45,16 @@ class PlayaDeAutos {
             val neto = subtotal - descuento
             val descuentoMonto = if (neto > 500) neto * 0.20 else 0.0
             val total = neto - descuentoMonto
+            val igv = total * 0.18
+            val totalPagar = total + igv
 
             println("-".repeat(54))
             println(String.format("%-30s S/ %8.2f", "Subtotal:", subtotal))
             println(String.format("%-30s S/ %8.2f", "Descuento cliente frecuente:", descuento))
             println(String.format("%-30s S/ %8.2f", "Descuento por monto (>500):", descuentoMonto))
-            println(String.format("%-30s S/ %8.2f", "MONTO TOTAL A PAGAR:", total))
+            println(String.format("%-30s S/ %8.2f", "Total:", total))
+            println(String.format("%-30s S/ %8.2f", "IGV (18%):", igv))
+            println(String.format("%-30s S/ %8.2f", "MONTO TOTAL A PAGAR:", totalPagar))
         }
     }
 }
