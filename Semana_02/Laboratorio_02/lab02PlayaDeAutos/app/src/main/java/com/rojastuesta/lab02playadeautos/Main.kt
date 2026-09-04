@@ -46,7 +46,7 @@ fun main() {
         try {
             val vehiculo = Vehiculo(
                 placa = leerTexto("Placa: "),
-                tipo = leerTexto("Tipo (moto, auto, camioneta): "),
+                tipo = leerTexto("Tipo (moto, auto, camioneta, trailer): "),
                 horas = horas,
                 esClienteFrecuente = esClienteFrecuente,
                 nombreCliente = nombreCliente
