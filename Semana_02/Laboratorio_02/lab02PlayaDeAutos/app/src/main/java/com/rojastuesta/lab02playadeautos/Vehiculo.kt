@@ -50,6 +50,7 @@ class Vehiculo(
         return when {
             hora <= 2 -> 0
             hora <= 5 -> 20
+            hora <= 10 -> 40
             else -> 50
         }
     }
