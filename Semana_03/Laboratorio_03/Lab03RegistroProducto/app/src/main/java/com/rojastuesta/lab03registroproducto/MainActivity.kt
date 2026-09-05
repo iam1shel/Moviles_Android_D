@@ -12,10 +12,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -25,10 +28,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.rojastuesta.lab03registroproducto.ui.theme.Lab03RegistroProductoTheme
-import androidx.compose.ui.graphics.Color
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,10 +53,12 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
     var precio by remember { mutableStateOf("") }
     var cantidad by remember { mutableStateOf("") }
     var mostrarResumen by remember { mutableStateOf(false) }
+    var mensajeError by remember { mutableStateOf("") }
 
     Column(
         modifier = modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
         Text(
@@ -69,7 +74,10 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
 
         OutlinedTextField(
             value = nombre,
-            onValueChange = { nombre = it },
+            onValueChange = {
+                nombre = it
+                mensajeError = ""
+            },
             label = { Text("Nombre del producto") },
             modifier = Modifier.fillMaxWidth()
         )
@@ -79,14 +87,20 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
         Row(modifier = Modifier.fillMaxWidth()) {
             OutlinedTextField(
                 value = precio,
-                onValueChange = { precio = it },
+                onValueChange = {
+                    precio = it
+                    mensajeError = ""
+                },
                 label = { Text("Precio (S/)") },
                 modifier = Modifier.weight(1f)
             )
             Spacer(modifier = Modifier.width(16.dp))
             OutlinedTextField(
                 value = cantidad,
-                onValueChange = { cantidad = it },
+                onValueChange = {
+                    cantidad = it
+                    mensajeError = ""
+                },
                 label = { Text("Cantidad") },
                 modifier = Modifier.weight(1f)
             )
@@ -95,10 +109,53 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { mostrarResumen = true },
+            onClick = {
+                val nombreOk = nombre.trim()
+                val precioNum = precio.trim().toDoubleOrNull()
+                val cantidadNum = cantidad.trim().toIntOrNull()
+
+                when {
+                    nombreOk.isEmpty() || precio.trim().isEmpty() || cantidad.trim().isEmpty() -> {
+                        mostrarResumen = false
+                        mensajeError = "Completa todos los campos."
+                    }
+                    precioNum == null || cantidadNum == null -> {
+                        mostrarResumen = false
+                        mensajeError = "Precio y cantidad deben ser números válidos."
+                    }
+                    else -> {
+                        nombre = nombreOk
+                        mensajeError = ""
+                        mostrarResumen = true
+                    }
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("AGREGAR PRODUCTO")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedButton(
+            onClick = {
+                nombre = ""
+                precio = ""
+                cantidad = ""
+                mostrarResumen = false
+                mensajeError = ""
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("LIMPIAR")
+        }
+
+        if (mensajeError.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = mensajeError,
+                color = Color(0xFFC62828)
+            )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -125,12 +182,13 @@ fun PantallaRegistro(modifier: Modifier = Modifier) {
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "✓ Producto registrado correctamente",
-                    color = Color(0xFF2E7D32)
-                )
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "✓ Producto registrado correctamente",
+                color = Color(0xFF2E7D32)
+            )
         }
     }
 }
