@@ -2,26 +2,36 @@
 
 Alumna: Rojas Tuesta Luz Mishel
 
-## Descripción del proyecto
+## Descripción
 
-Aplicación de citas médicas en Jetpack Compose. Desde el inicio se elige un doctor, se ve su perfil y se reserva una cita. La confirmación muestra doctor, fecha y hora. Un menú lateral abre Mis citas, el historial médico y el perfil del paciente.
+Aplicación móvil para gestión de citas médicas.
 
-## Tecnologías utilizadas
+## Tecnologías
 
 - Kotlin
 - Jetpack Compose
 - Material 3
 - Navigation Compose
 
-## Cómo abrirlo
+## Funcionalidades
+
+- Pantalla principal
+- Selección de médicos
+- Reserva de cita
+- Confirmación
+- Historial de citas
+- Perfil del usuario
+
+## Estructura general
+
+```
+com.rojastuesta.clinicasaludplus/
+├── MainActivity.kt
+├── components/
+├── model/
+├── navigation/
+├── screens/
+└── ui/
+```
 
 Android Studio → File → Open → `Semana_06/Actividad_Semana1_6/ClinicaSaludPlus`.
-
-Paquete: `com.rojastuesta.clinicasaludplus`.
-
-## Flujo
-
-1. Inicio: lista de doctores y menú lateral.
-2. Perfil del doctor: recibe `doctorId`.
-3. Reserva de cita y pantalla de confirmación.
-4. Mis citas, historial médico y perfil, desde el drawer.
