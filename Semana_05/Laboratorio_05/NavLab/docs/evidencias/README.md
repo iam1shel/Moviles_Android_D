@@ -1,11 +1,11 @@
-# Evidencias del Laboratorio S05
+# Evidencias del Laboratorio 05
 
-Copia aquí las capturas de la app en el emulador o en el celular. Usa estos nombres para que el README las encuentre:
+Coloca aquí las capturas del emulador o del celular, con estos nombres:
 
-| Archivo | Qué debe verse |
+| Archivo | Qué representa |
 | --- | --- |
-| `01-inicial.png` | Portal Académico, antes de iniciar sesión |
-| `02-home.png` | Bienvenida con las dos tarjetas |
-| `03-directorio.png` | Lista de alumnos |
-| `04-detalle.png` | Expediente del alumno elegido |
-| `05-perfil.png` | Configuración de perfil y cerrar sesión |
+| `01-inicial.png` | Pantalla inicial: Portal Académico, antes de iniciar sesión |
+| `02-home.png` | Bienvenida, con las tarjetas de directorio y perfil |
+| `03-directorio.png` | Directorio de alumnos |
+| `04-detalle.png` | Expediente académico del alumno elegido |
+| `05-perfil.png` | Perfil académico y la opción de cerrar sesión |

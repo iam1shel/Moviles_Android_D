@@ -1,12 +1,10 @@
-# Laboratorio S05
+# Laboratorio 05 - Navegación en Jetpack Compose
 
 Alumna: Rojas Tuesta Luz Mishel
 
 ## Descripción del proyecto
 
-Portal académico en Jetpack Compose. La app entra por un login, muestra una bienvenida y permite abrir el directorio de alumnos o el perfil académico. Al elegir un alumno se abre su expediente. El identificador viaja como entero con `NavType.IntType`.
-
-Cerrar sesión vuelve al login y limpia el historial de pantallas con `popUpTo`, para no dejar pantallas anteriores en la pila.
+Portal Académico en Jetpack Compose. La aplicación entra por un login, muestra una bienvenida y desde ahí se abre el directorio de alumnos o el perfil académico. Al elegir un alumno se abre su expediente.
 
 ## Tecnologías utilizadas
 
@@ -15,21 +13,54 @@ Cerrar sesión vuelve al login y limpia el historial de pantallas con `popUpTo`,
 - Material 3
 - Navigation Compose 2.7.7
 
-## Cómo abrirlo
+## Estructura principal del proyecto
+
+```
+com.example.semana05_navegacion/
+├── MainActivity.kt
+├── model/
+│   └── Alumno.kt
+├── navigation/
+│   ├── Screen.kt
+│   └── AppNavigation.kt
+├── screens/
+│   ├── LoginScreen.kt
+│   ├── HomeScreen.kt
+│   ├── ListScreen.kt
+│   ├── DetailScreen.kt
+│   └── ProfileScreen.kt
+└── ui/
+```
 
 Android Studio → File → Open → `Semana_05/Laboratorio_05/NavLab`.
 
-Paquete: `com.example.semana05_navegacion`.
+## Flujo de navegación
 
-## Flujo
+```
+Login
+  ↓
+Home
+  ↓
+Directorio de Alumnos
+  ↓
+Expediente Académico
+```
 
-1. Portal Académico: iniciar sesión navega a Home.
-2. Home: tarjetas hacia el directorio y el perfil, y cerrar sesión.
-3. Directorio de alumnos: lista en `LazyColumn`.
-4. Expediente académico: recibe `itemId` como `Int`.
-5. Perfil académico: datos de Juan León Suiyon y cerrar sesión.
+```
+Home
+  ↓
+Perfil Académico
+```
 
-## Prompt utilizado para mejorar la interfaz
+## Navegación implementada
+
+- `NavHost` registra las pantallas y define el login como inicio.
+- `NavController` mueve la app entre rutas.
+- `Screen.kt` concentra las rutas en una sealed class.
+- El expediente recibe el id del alumno como argumento entero con `NavType.IntType`.
+- Cerrar sesión vuelve al login y limpia la pila con `popUpTo`.
+
+## Prompt utilizado con IA
 
 Mejora visualmente la app de navegación del laboratorio S05, hecha en Kotlin y Jetpack Compose con Material 3. Mantén la navegación: login, home, lista, detalle con argumento entero y perfil. No cambies el paquete `com.example.semana05_navegacion` ni Navigation Compose.
 
@@ -45,12 +76,4 @@ Si en Android Studio se usó otro texto, reemplaza este bloque por ese prompt.
 
 ## Evidencias
 
-Coloca las capturas en `docs/evidencias/`:
-
-- `01-inicial.png`: pantalla de inicio (Portal Académico).
-- `02-home.png`: bienvenida.
-- `03-directorio.png`: directorio de alumnos.
-- `04-detalle.png`: expediente de un alumno.
-- `05-perfil.png`: perfil académico.
-
-Después de guardar esas imágenes, agrégalas al README con `![descripcion](docs/evidencias/nombre.png)`.
+Las capturas van en `docs/evidencias/`. El detalle de cada archivo está en `docs/evidencias/README.md`.
