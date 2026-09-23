@@ -62,17 +62,102 @@ Perfil Académico
 
 ## Prompt utilizado con IA
 
-Mejora visualmente la app de navegación del laboratorio S05, hecha en Kotlin y Jetpack Compose con Material 3. Mantén la navegación: login, home, lista, detalle con argumento entero y perfil. No cambies el paquete `com.example.semana05_navegacion` ni Navigation Compose.
+Revisa el proyecto actual NavLab del Laboratorio 05 de Programación Móviles: Navegación en Jetpack Compose.
 
-Convierte las pantallas simples del laboratorio en un portal académico con fondo en degradado lila:
+El proyecto ya fue creado y contiene las pantallas principales, pero necesito que verifiques que cumpla correctamente con los requisitos del laboratorio.
 
-- Login: tarjeta blanca titulada Portal Académico, correo institucional, contraseña y botón INICIAR SESIÓN.
-- Home: Bienvenido, Juan León, con dos tarjetas (Directorio de Alumnos y Mi Perfil Académico) y el texto Cerrar Sesión Segura.
-- Lista: Directorio de Alumnos, con cinco estudiantes, avatar, carrera y flecha.
-- Detalle: Expediente Académico del alumno seleccionado, con código, correo, facultad y biografía.
-- Perfil: Configuración de Perfil de Juan León Suiyon, con datos personales, datos académicos y botón Cerrar Sesión.
+Primero analiza la estructura actual del proyecto y no generes código innecesario.
 
-Si en Android Studio se usó otro texto, reemplaza este bloque por ese prompt.
+Revisa:
+
+1. Compilación del proyecto:
+- Corrige cualquier error de Gradle, dependencias o versiones.
+- Mantén compatibilidad con Jetpack Compose y Navigation Compose.
+- No actualices librerías sin necesidad.
+- Verifica que compile correctamente.
+
+2. Arquitectura:
+Comprueba que exista una estructura organizada:
+
+- navigation/
+  - Screen.kt
+  - AppNavigation.kt
+
+- screens/
+  - LoginScreen
+  - HomeScreen
+  - ListScreen
+  - DetailScreen
+  - ProfileScreen
+
+Si la estructura está diferente, reorganízala sin romper funcionalidades.
+
+3. Navegación:
+Verifica que el flujo sea:
+
+Portal Académico
+↓
+Bienvenido Juan León
+↓
+Directorio de Alumnos
+↓
+Expediente Académico
+
+Y también:
+
+Bienvenido Juan León
+↓
+Perfil Académico
+
+Debe utilizar:
+- NavController
+- NavHost
+- rutas mediante sealed class
+- popBackStack()
+
+4. Argumentos:
+Verifica que el expediente académico reciba correctamente el id del alumno como Int usando NavType.IntType.
+
+5. Interfaces:
+Revisa que las pantallas tengan:
+
+Login:
+- correo institucional
+- contraseña
+- botón iniciar sesión
+
+Home:
+- bienvenida Juan León
+- botones de navegación
+- cerrar sesión
+
+Directorio:
+- lista de 5 alumnos
+- navegación al seleccionar alumno
+
+Expediente:
+- código
+- correo
+- facultad
+- biografía
+
+Perfil:
+- datos del estudiante Juan León
+
+6. Diseño:
+Mejora la interfaz usando Material3:
+- Cards
+- botones redondeados
+- colores morados similares al ejemplo del laboratorio
+- TopAppBar donde corresponda
+- espaciado correcto
+
+Al finalizar:
+- indica qué archivos modificaste
+- explica qué errores encontraste
+- confirma si el proyecto queda listo para ejecutar en emulador.
+
+No elimines funcionalidades existentes.
 
 ## Evidencias
 
