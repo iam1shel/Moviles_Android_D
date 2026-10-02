@@ -52,6 +52,7 @@ fun AppNavegacion() {
         drawerState = drawerState,
         drawerContent = {
             AppDrawer(
+                destinoActual = destino,
                 onDestino = { elegido ->
                     destino = elegido
                     scope.launch { drawerState.close() }
