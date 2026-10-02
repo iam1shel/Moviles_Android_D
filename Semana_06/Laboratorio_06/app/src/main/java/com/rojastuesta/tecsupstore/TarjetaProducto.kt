@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,8 +27,19 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun TarjetaProducto(producto: Producto) {
     var expanded by remember { mutableStateOf(false) }
+    var esFavorito by remember { mutableStateOf(false) }
+    var aviso by remember { mutableStateOf<String?>(null) }
 
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = if (esFavorito) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else {
+                MaterialTheme.colorScheme.surface
+            }
+        )
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -41,6 +54,20 @@ fun TarjetaProducto(producto: Producto) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(text = producto.precio, style = MaterialTheme.typography.bodyMedium)
+                if (esFavorito) {
+                    Text(
+                        text = "En favoritos",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                aviso?.let { mensaje ->
+                    Text(
+                        text = mensaje,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
             Box {
                 IconButton(onClick = { expanded = true }) {
@@ -53,6 +80,32 @@ fun TarjetaProducto(producto: Producto) {
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
                 ) {
+                    DropdownMenuItem(
+                        text = { Text("Favoritos") },
+                        onClick = {
+                            esFavorito = !esFavorito
+                            aviso = if (esFavorito) {
+                                "Marcaste ${producto.nombre} como favorito"
+                            } else {
+                                "Quitaste ${producto.nombre} de favoritos"
+                            }
+                            expanded = false
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Compartir") },
+                        onClick = {
+                            aviso = "Listo para compartir ${producto.nombre}"
+                            expanded = false
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Reportar") },
+                        onClick = {
+                            aviso = "Reportaste ${producto.nombre}"
+                            expanded = false
+                        }
+                    )
                 }
             }
         }
