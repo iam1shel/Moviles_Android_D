@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Badge
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +44,7 @@ enum class DestinoTienda(
 @Composable
 fun AppDrawer(
     destinoActual: DestinoTienda,
+    totalFavoritos: Int,
     onDestino: (DestinoTienda) -> Unit
 ) {
     ModalDrawerSheet {
@@ -82,6 +84,15 @@ fun AppDrawer(
                     )
                 },
                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                badge = if (destino == DestinoTienda.Favoritos && totalFavoritos > 0) {
+                    {
+                        Badge {
+                            Text(text = totalFavoritos.toString())
+                        }
+                    }
+                } else {
+                    null
+                },
                 colors = NavigationDrawerItemDefaults.colors(
                     selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                     selectedIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
