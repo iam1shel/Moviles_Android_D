@@ -1,0 +1,137 @@
+package com.rojastuesta.tecsupstore
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Flag
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+@Composable
+fun TarjetaProducto(producto: Producto) {
+    var expanded by remember { mutableStateOf(false) }
+    var esFavorito by remember { mutableStateOf(false) }
+    var aviso by remember { mutableStateOf<String?>(null) }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = if (esFavorito) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else {
+                MaterialTheme.colorScheme.surface
+            }
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, top = 8.dp, bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = producto.nombre, style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = producto.categoria,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(text = producto.precio, style = MaterialTheme.typography.bodyMedium)
+                if (esFavorito) {
+                    Text(
+                        text = "En favoritos",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                aviso?.let { mensaje ->
+                    Text(
+                        text = mensaje,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            Box {
+                IconButton(onClick = { expanded = true }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "Más opciones de ${producto.nombre}"
+                    )
+                }
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Favoritos") },
+                        onClick = {
+                            esFavorito = !esFavorito
+                            aviso = if (esFavorito) {
+                                "Marcaste ${producto.nombre} como favorito"
+                            } else {
+                                "Quitaste ${producto.nombre} de favoritos"
+                            }
+                            expanded = false
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Favorite,
+                                contentDescription = null
+                            )
+                        }
+                    )
+                    HorizontalDivider()
+                    DropdownMenuItem(
+                        text = { Text("Compartir") },
+                        onClick = {
+                            aviso = "Listo para compartir ${producto.nombre}"
+                            expanded = false
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = null
+                            )
+                        }
+                    )
+                    HorizontalDivider()
+                    DropdownMenuItem(
+                        text = { Text("Reportar") },
+                        onClick = {
+                            aviso = "Reportaste ${producto.nombre}"
+                            expanded = false
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Flag,
+                                contentDescription = null
+                            )
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
