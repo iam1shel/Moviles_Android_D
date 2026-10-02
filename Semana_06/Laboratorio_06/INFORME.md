@@ -6,7 +6,7 @@
 
 ## Caso propuesto
 
-TECSUP Store es una tienda en Kotlin con Jetpack Compose. En el inicio hay seis productos. Cada tarjeta tiene un ícono de tres puntos y, en el mismo `Box`, un `DropdownMenu` con Favoritos, Compartir y Reportar. Cada opción lleva `leadingIcon` y las separa un `HorizontalDivider`.
+TECSUP Store es una tienda en Kotlin con Jetpack Compose. En el inicio están Audifonos, Smartwatch y Funda celular. Cada tarjeta tiene un ícono de tres puntos y, en el mismo `Box`, un `DropdownMenu` con Favoritos, Compartir y Reportar. Cada opción lleva `leadingIcon` y las separa un `HorizontalDivider`.
 
 El ícono de menú de la barra abre un `ModalNavigationDrawer`. `AppDrawer` usa `ModalDrawerSheet`. El encabezado muestra las iniciales MR, el nombre Maria Rojas y el correo maria@tecsup.edu.pe. Los destinos son Inicio, Mis pedidos, Favoritos, Perfil y Cerrar sesión. El destino activo se resalta con otro color de fondo y esas opciones cambian de pantalla.
 
