@@ -6,11 +6,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -90,20 +94,40 @@ fun TarjetaProducto(producto: Producto) {
                                 "Quitaste ${producto.nombre} de favoritos"
                             }
                             expanded = false
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Favorite,
+                                contentDescription = null
+                            )
                         }
                     )
+                    HorizontalDivider()
                     DropdownMenuItem(
                         text = { Text("Compartir") },
                         onClick = {
                             aviso = "Listo para compartir ${producto.nombre}"
                             expanded = false
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = null
+                            )
                         }
                     )
+                    HorizontalDivider()
                     DropdownMenuItem(
                         text = { Text("Reportar") },
                         onClick = {
                             aviso = "Reportaste ${producto.nombre}"
                             expanded = false
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Flag,
+                                contentDescription = null
+                            )
                         }
                     )
                 }
