@@ -21,6 +21,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,15 +30,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.rojastuesta.tecsupstore.ui.theme.Morado
 import kotlinx.coroutines.launch
 
 private data class Pedido(val codigo: String, val detalle: String, val estado: String)
 
 private val pedidos = listOf(
-    Pedido("PED-1042", "Polo TECSUP · 1", "En camino"),
-    Pedido("PED-1038", "Cuaderno de laboratorio · 2", "Entregado"),
-    Pedido("PED-1031", "Taza del taller · 1", "Listo para recoger")
+    Pedido("PED-1042", "Audifonos · 1", "En camino"),
+    Pedido("PED-1038", "Smartwatch · 1", "Entregado"),
+    Pedido("PED-1031", "Funda celular · 1", "Listo para recoger")
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,7 +68,26 @@ fun AppNavegacion() {
             modifier = Modifier.fillMaxSize(),
             topBar = {
                 TopAppBar(
-                    title = { Text(titulo) },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Morado,
+                        titleContentColor = Color.White,
+                        navigationIconContentColor = Color.White
+                    ),
+                    title = {
+                        Column {
+                            Text(
+                                text = titulo,
+                                fontWeight = FontWeight.Bold
+                            )
+                            if (destino == DestinoTienda.Inicio) {
+                                Text(
+                                    text = "Mas vendidos",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.White.copy(alpha = 0.85f)
+                                )
+                            }
+                        }
+                    },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(
