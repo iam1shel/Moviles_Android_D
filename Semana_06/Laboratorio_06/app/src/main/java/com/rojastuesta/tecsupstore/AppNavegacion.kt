@@ -24,6 +24,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -46,6 +47,7 @@ fun AppNavegacion() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var destino by remember { mutableStateOf(DestinoTienda.Inicio) }
+    var toquesFavoritos by remember { mutableIntStateOf(0) }
     val titulo = if (destino == DestinoTienda.Inicio) "TECSUP Store" else destino.titulo
 
     ModalNavigationDrawer(
@@ -53,6 +55,7 @@ fun AppNavegacion() {
         drawerContent = {
             AppDrawer(
                 destinoActual = destino,
+                totalFavoritos = toquesFavoritos,
                 onDestino = { elegido ->
                     destino = elegido
                     scope.launch { drawerState.close() }
@@ -77,9 +80,12 @@ fun AppNavegacion() {
             }
         ) { padding ->
             when (destino) {
-                DestinoTienda.Inicio -> ListaProductos(padding)
+                DestinoTienda.Inicio -> ListaProductos(
+                    padding = padding,
+                    onToqueFavorito = { toquesFavoritos++ }
+                )
                 DestinoTienda.Pedidos -> PantallaPedidos(padding)
-                DestinoTienda.Favoritos -> PantallaFavoritos(padding)
+                DestinoTienda.Favoritos -> PantallaFavoritos(padding, toquesFavoritos)
                 DestinoTienda.Perfil -> PantallaPerfil(padding)
                 DestinoTienda.CerrarSesion -> PantallaCerrarSesion(
                     padding = padding,
@@ -91,7 +97,10 @@ fun AppNavegacion() {
 }
 
 @Composable
-private fun ListaProductos(padding: PaddingValues) {
+private fun ListaProductos(
+    padding: PaddingValues,
+    onToqueFavorito: () -> Unit
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -100,7 +109,10 @@ private fun ListaProductos(padding: PaddingValues) {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(catalogoTecsup, key = { it.id }) { producto ->
-            TarjetaProducto(producto)
+            TarjetaProducto(
+                producto = producto,
+                onToqueFavorito = onToqueFavorito
+            )
         }
     }
 }
@@ -131,7 +143,7 @@ private fun PantallaPedidos(padding: PaddingValues) {
 }
 
 @Composable
-private fun PantallaFavoritos(padding: PaddingValues) {
+private fun PantallaFavoritos(padding: PaddingValues, toquesFavoritos: Int) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -141,7 +153,7 @@ private fun PantallaFavoritos(padding: PaddingValues) {
     ) {
         Text(text = "Favoritos", style = MaterialTheme.typography.headlineSmall)
         Text(
-            text = "Marca Favoritos en el menú de una tarjeta. El cambio se queda en esa tarjeta y las demás no se alteran.",
+            text = "Veces que elegiste Favoritos: $toquesFavoritos",
             style = MaterialTheme.typography.bodyMedium
         )
     }
