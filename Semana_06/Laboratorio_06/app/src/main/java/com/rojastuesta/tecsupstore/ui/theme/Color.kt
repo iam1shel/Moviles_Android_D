@@ -2,11 +2,10 @@ package com.rojastuesta.tecsupstore.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val AzulTecsup = Color(0xFF0B3A82)
-val AzulOscuro = Color(0xFF07285C)
-val AzulClaro = Color(0xFFD6E4FF)
-val NaranjaTecsup = Color(0xFFE87722)
-val Fondo = Color(0xFFF4F7FB)
-val Superficie = Color(0xFFFFFFFF)
+val Morado = Color(0xFF673AB7)
+val MoradoOscuro = Color(0xFF512DA8)
+val Lavanda = Color(0xFFEDE7F6)
+val LavandaSuave = Color(0xFFF6F1FB)
+val Fondo = Color(0xFFFFFFFF)
 val Texto = Color(0xFF1B1B1B)
-val TextoSecundario = Color(0xFF5C6570)
+val TextoSecundario = Color(0xFF6B6570)

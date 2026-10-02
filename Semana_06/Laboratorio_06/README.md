@@ -2,7 +2,7 @@
 
 **Alumna:** Rojas Tuesta Luz Mishel
 
-Tienda en Kotlin con Jetpack Compose. Cada producto tiene un menú de tres puntos (Favoritos, Compartir y Reportar) y la barra abre un drawer. El encabezado muestra a Maria Rojas y el destino activo cambia de color.
+Tienda en Kotlin con Jetpack Compose, con la barra morada de TECSUP Store, las tarjetas de Audifonos, Smartwatch y Funda celular, y el drawer de Maria Rojas.
 
 El conjunto de ids marcados vive en `AppNavegacion`. El badge de Favoritos muestra ese total y no aparece si es 0. La pantalla Favoritos usa la misma lista.
 
