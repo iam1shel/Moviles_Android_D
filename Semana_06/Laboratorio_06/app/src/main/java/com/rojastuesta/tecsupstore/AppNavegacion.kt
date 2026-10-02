@@ -24,7 +24,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -47,7 +46,10 @@ fun AppNavegacion() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var destino by remember { mutableStateOf(DestinoTienda.Inicio) }
-    var toquesFavoritos by remember { mutableIntStateOf(0) }
+    var idsFavoritos by remember { mutableStateOf(setOf<Int>()) }
+    val alternarFavorito: (Int) -> Unit = { id ->
+        idsFavoritos = if (id in idsFavoritos) idsFavoritos - id else idsFavoritos + id
+    }
     val titulo = if (destino == DestinoTienda.Inicio) "TECSUP Store" else destino.titulo
 
     ModalNavigationDrawer(
@@ -55,7 +57,7 @@ fun AppNavegacion() {
         drawerContent = {
             AppDrawer(
                 destinoActual = destino,
-                totalFavoritos = toquesFavoritos,
+                totalFavoritos = idsFavoritos.size,
                 onDestino = { elegido ->
                     destino = elegido
                     scope.launch { drawerState.close() }
@@ -82,10 +84,15 @@ fun AppNavegacion() {
             when (destino) {
                 DestinoTienda.Inicio -> ListaProductos(
                     padding = padding,
-                    onToqueFavorito = { toquesFavoritos++ }
+                    idsFavoritos = idsFavoritos,
+                    onFavorito = alternarFavorito
                 )
                 DestinoTienda.Pedidos -> PantallaPedidos(padding)
-                DestinoTienda.Favoritos -> PantallaFavoritos(padding, toquesFavoritos)
+                DestinoTienda.Favoritos -> PantallaFavoritos(
+                    padding = padding,
+                    idsFavoritos = idsFavoritos,
+                    onFavorito = alternarFavorito
+                )
                 DestinoTienda.Perfil -> PantallaPerfil(padding)
                 DestinoTienda.CerrarSesion -> PantallaCerrarSesion(
                     padding = padding,
@@ -99,7 +106,8 @@ fun AppNavegacion() {
 @Composable
 private fun ListaProductos(
     padding: PaddingValues,
-    onToqueFavorito: () -> Unit
+    idsFavoritos: Set<Int>,
+    onFavorito: (Int) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -111,7 +119,8 @@ private fun ListaProductos(
         items(catalogoTecsup, key = { it.id }) { producto ->
             TarjetaProducto(
                 producto = producto,
-                onToqueFavorito = onToqueFavorito
+                esFavorito = producto.id in idsFavoritos,
+                onFavorito = { onFavorito(producto.id) }
             )
         }
     }
@@ -143,19 +152,42 @@ private fun PantallaPedidos(padding: PaddingValues) {
 }
 
 @Composable
-private fun PantallaFavoritos(padding: PaddingValues, toquesFavoritos: Int) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(padding)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Text(text = "Favoritos", style = MaterialTheme.typography.headlineSmall)
-        Text(
-            text = "Veces que elegiste Favoritos: $toquesFavoritos",
-            style = MaterialTheme.typography.bodyMedium
-        )
+private fun PantallaFavoritos(
+    padding: PaddingValues,
+    idsFavoritos: Set<Int>,
+    onFavorito: (Int) -> Unit
+) {
+    val marcados = catalogoTecsup.filter { it.id in idsFavoritos }
+    if (marcados.isEmpty()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(text = "Favoritos", style = MaterialTheme.typography.headlineSmall)
+            Text(
+                text = "Todavía no hay productos marcados. Usa Favoritos en el menú de una tarjeta.",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    } else {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(marcados, key = { it.id }) { producto ->
+                TarjetaProducto(
+                    producto = producto,
+                    esFavorito = true,
+                    onFavorito = { onFavorito(producto.id) }
+                )
+            }
+        }
     }
 }
 

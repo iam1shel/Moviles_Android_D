@@ -31,10 +31,10 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun TarjetaProducto(
     producto: Producto,
-    onToqueFavorito: () -> Unit
+    esFavorito: Boolean,
+    onFavorito: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var esFavorito by remember { mutableStateOf(false) }
     var aviso by remember { mutableStateOf<String?>(null) }
 
     Card(
@@ -90,12 +90,11 @@ fun TarjetaProducto(
                     DropdownMenuItem(
                         text = { Text("Favoritos") },
                         onClick = {
-                            esFavorito = !esFavorito
-                            onToqueFavorito()
+                            onFavorito()
                             aviso = if (esFavorito) {
-                                "Marcaste ${producto.nombre} como favorito"
-                            } else {
                                 "Quitaste ${producto.nombre} de favoritos"
+                            } else {
+                                "Marcaste ${producto.nombre} como favorito"
                             }
                             expanded = false
                         },
