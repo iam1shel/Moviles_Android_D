@@ -5,10 +5,6 @@ import com.saludplus.citas.data.model.Especialidad
 import com.saludplus.citas.data.model.Medico
 import com.saludplus.citas.data.model.Usuario
 
-/**
- * Colecciones en memoria (sin Room / Firebase).
- * Esqueleto: completar cada TODO en commits posteriores.
- */
 object Repositorio {
     private val usuarios = mutableListOf(
         Usuario(1, "Juan Pérez", "juan@correo.com", "999111222", "123456")
@@ -32,32 +28,42 @@ object Repositorio {
         "09:00", "09:30", "10:00", "10:30", "11:00",
         "11:30", "15:00", "15:30", "16:00", "16:30"
     )
+    private var siguienteCitaId = 1
 
     var usuarioActual: Usuario? = null
         private set
 
-    // TODO: usuarios: any + add
     fun registrarUsuario(nombre: String, correo: String, telefono: String, clave: String): Boolean {
-        return false
+        if (usuarios.any { it.correo.equals(correo, ignoreCase = true) }) return false
+        val id = (usuarios.maxOfOrNull { it.id } ?: 0) + 1
+        val nuevo = Usuario(id, nombre, correo, telefono, clave)
+        usuarios.add(nuevo)
+        usuarioActual = nuevo
+        return true
     }
 
-    // TODO: usuarios: find; asignar usuarioActual
     fun iniciarSesion(correo: String, clave: String): Boolean {
-        return false
+        val encontrado = usuarios.find {
+            it.correo.equals(correo, ignoreCase = true) && it.clave == clave
+        }
+        usuarioActual = encontrado
+        return encontrado != null
     }
 
-    // TODO: limpiar usuarioActual
     fun cerrarSesion() {
+        usuarioActual = null
     }
 
-    // TODO: especialidades: filter + contains
     fun buscarEspecialidades(query: String): List<Especialidad> {
-        return emptyList()
+        if (query.isBlank()) return especialidades.toList()
+        return especialidades.filter {
+            it.nombre.contains(query, ignoreCase = true) ||
+                it.descripcion.contains(query, ignoreCase = true)
+        }
     }
 
-    // TODO: especialidades: take
     fun especialidadesDestacadas(): List<Especialidad> {
-        return emptyList()
+        return especialidades.filter { it.destacada }.take(3)
     }
 
     fun obtenerEspecialidad(id: Int): Especialidad? = especialidades.find { it.id == id }
@@ -66,21 +72,26 @@ object Repositorio {
 
     fun obtenerCita(id: Int): Cita? = citas.find { it.id == id }
 
-    // TODO: medicos: filter + sortedByDescending
     fun medicosPorEspecialidad(especialidadId: Int): List<Medico> {
-        return emptyList()
+        return medicos
+            .filter { it.especialidadId == especialidadId }
+            .sortedByDescending { it.rating }
     }
 
     fun buscarMedicos(especialidadId: Int, query: String): List<Medico> {
-        return emptyList()
+        val base = medicosPorEspecialidad(especialidadId)
+        if (query.isBlank()) return base
+        return base.filter { it.nombre.contains(query, ignoreCase = true) }
     }
 
-    // TODO: citas filter + horariosBase filter
     fun horariosDisponibles(medicoId: Int, fecha: String): List<String> {
-        return emptyList()
+        val ocupados = citas
+            .filter { it.medicoId == medicoId && it.fecha == fecha }
+            .map { it.hora }
+            .toSet()
+        return horariosBase.filter { it !in ocupados }
     }
 
-    // TODO: citas: any + add
     fun agendarCita(
         usuarioId: Int,
         medicoId: Int,
@@ -88,26 +99,38 @@ object Repositorio {
         fecha: String,
         hora: String
     ): Cita? {
-        return null
+        val yaExiste = citas.any {
+            it.medicoId == medicoId && it.fecha == fecha && it.hora == hora
+        }
+        if (yaExiste) return null
+        val cita = Cita(
+            id = siguienteCitaId++,
+            usuarioId = usuarioId,
+            medicoId = medicoId,
+            especialidadId = especialidadId,
+            fecha = fecha,
+            hora = hora
+        )
+        citas.add(cita)
+        return cita
     }
 
-    // TODO: citas: filter + sortedWith
     fun citasDelUsuario(usuarioId: Int): List<Cita> {
-        return emptyList()
+        return citas
+            .filter { it.usuarioId == usuarioId }
+            .sortedWith(compareBy({ it.fecha }, { it.hora }))
     }
 
-    // TODO reto: removeIf
     fun cancelarCita(citaId: Int): Boolean {
-        return false
+        return citas.removeIf { it.id == citaId }
     }
 
-    /** Acceso interno para implementación (no cambiar firmas públicas). */
-    internal fun _usuarios() = usuarios
-    internal fun _especialidades() = especialidades
-    internal fun _medicos() = medicos
-    internal fun _citas() = citas
-    internal fun _horariosBase() = horariosBase
-    internal fun _setUsuarioActual(u: Usuario?) {
-        usuarioActual = u
-    }
+    /** Días fijos para Fase 1 (calendario dinámico en mejora-ia). */
+    fun diasFijosFase1(): List<String> = listOf(
+        "2026-10-13",
+        "2026-10-14",
+        "2026-10-15",
+        "2026-10-16",
+        "2026-10-17"
+    )
 }
