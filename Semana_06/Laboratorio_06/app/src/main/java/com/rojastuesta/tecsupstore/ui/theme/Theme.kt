@@ -6,19 +6,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 private val LightColorScheme = lightColorScheme(
-    primary = AzulTecsup,
+    primary = Morado,
     onPrimary = Color.White,
-    primaryContainer = AzulClaro,
-    onPrimaryContainer = AzulOscuro,
-    secondary = NaranjaTecsup,
+    primaryContainer = Lavanda,
+    onPrimaryContainer = MoradoOscuro,
+    secondary = Morado,
     onSecondary = Color.White,
-    secondaryContainer = Color(0xFFFFE3CC),
-    onSecondaryContainer = Color(0xFF5C2E00),
+    secondaryContainer = Lavanda,
+    onSecondaryContainer = MoradoOscuro,
     background = Fondo,
     onBackground = Texto,
-    surface = Superficie,
+    surface = Fondo,
     onSurface = Texto,
-    surfaceVariant = AzulClaro,
+    surfaceVariant = LavandaSuave,
     onSurfaceVariant = TextoSecundario
 )
 
