@@ -13,8 +13,10 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +51,32 @@ fun RegistroScreen(
     var telefono by remember { mutableStateOf("") }
     var clave by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
+    var mostrarExito by remember { mutableStateOf(false) }
+
+    if (mostrarExito) {
+        AlertDialog(
+            onDismissRequest = { /* debe confirmar con el botón */ },
+            title = {
+                Text("Registro exitoso", fontWeight = FontWeight.Bold, color = AzulTexto)
+            },
+            text = {
+                Text(
+                    text = "Tu cuenta se creó correctamente. Ahora inicia sesión para continuar.",
+                    color = AzulGris
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        mostrarExito = false
+                        onRegistrado()
+                    }
+                ) {
+                    Text("Iniciar sesión", color = AzulPrimario, fontWeight = FontWeight.Bold)
+                }
+            }
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -120,7 +148,10 @@ fun RegistroScreen(
                         telefono = telefono,
                         clave = clave
                     ) -> error = "Ese correo ya está registrado"
-                    else -> onRegistrado()
+                    else -> {
+                        error = null
+                        mostrarExito = true
+                    }
                 }
             }
         )

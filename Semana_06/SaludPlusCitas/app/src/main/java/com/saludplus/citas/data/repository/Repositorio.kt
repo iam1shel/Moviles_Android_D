@@ -74,7 +74,7 @@ object Repositorio {
         val id = (usuarios.maxOfOrNull { it.id } ?: 0) + 1
         val nuevo = Usuario(id, nombre, correo, telefono, clave)
         usuarios.add(nuevo)
-        usuarioActual = nuevo
+        // No inicia sesión automáticamente: el usuario debe loguearse después.
         return true
     }
 

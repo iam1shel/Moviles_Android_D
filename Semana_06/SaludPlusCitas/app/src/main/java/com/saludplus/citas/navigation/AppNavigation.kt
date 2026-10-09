@@ -40,8 +40,10 @@ fun AppNavigation() {
             RegistroScreen(
                 onVolver = { navController.popBackStack() },
                 onRegistrado = {
-                    navController.navigate(Rutas.Home) {
-                        popUpTo(Rutas.Splash) { inclusive = true }
+                    // Tras registrarse: mensaje de éxito y luego ir a Login (sin auto-login).
+                    navController.navigate(Rutas.Login) {
+                        popUpTo(Rutas.Registro) { inclusive = true }
+                        launchSingleTop = true
                     }
                 },
                 onTerminos = { navController.navigate(Rutas.Terminos) },
