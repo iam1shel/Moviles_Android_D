@@ -5,5 +5,8 @@ data class Medico(
     val nombre: String,
     val especialidadId: Int,
     val rating: Double,
-    val experienciaAnios: Int
+    val experienciaAnios: Int,
+    val reseñas: Int = 100,
+    val disponibilidad: String = "Disponible hoy",
+    val cmp: String = "12345"
 )

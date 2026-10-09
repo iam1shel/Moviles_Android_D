@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.MedicalServices
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material3.Card
@@ -48,7 +49,8 @@ fun HomeScreen(
     onMisCitas: () -> Unit,
     onResultados: () -> Unit,
     onPerfil: () -> Unit,
-    onNotificaciones: () -> Unit
+    onNotificaciones: () -> Unit,
+    onMisMedicos: () -> Unit
 ) {
     var tab by remember { mutableIntStateOf(0) }
     val nombre = Repositorio.usuarioActual?.nombre ?: "Paciente"
@@ -157,8 +159,7 @@ fun HomeScreen(
                 }
             }
             Spacer(Modifier.height(20.dp))
-            Card(
-                onClick = onMisCitas,
+SKIP
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {

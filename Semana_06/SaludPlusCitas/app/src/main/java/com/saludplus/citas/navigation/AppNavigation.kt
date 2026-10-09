@@ -18,6 +18,7 @@ import com.saludplus.citas.ui.screens.auth.TerminosScreen
 import com.saludplus.citas.ui.screens.citas.DetalleCitaScreen
 import com.saludplus.citas.ui.screens.citas.MisCitasScreen
 import com.saludplus.citas.ui.screens.home.HomeScreen
+import com.saludplus.citas.ui.screens.medicos.MisMedicosScreen
 import com.saludplus.citas.ui.screens.notificaciones.NotificacionesScreen
 import com.saludplus.citas.ui.screens.perfil.PerfilScreen
 import com.saludplus.citas.ui.screens.resultados.ResultadosScreen
@@ -63,8 +64,12 @@ fun AppNavigation() {
                 onMisCitas = { navController.navigate(Rutas.MisCitas) },
                 onResultados = { navController.navigate(Rutas.Resultados) },
                 onPerfil = { navController.navigate(Rutas.Perfil) },
-                onNotificaciones = { navController.navigate(Rutas.Notificaciones) }
+                onNotificaciones = { navController.navigate(Rutas.Notificaciones) },
+                onMisMedicos = { navController.navigate(Rutas.MisMedicos) }
             )
+        }
+        composable(Rutas.MisMedicos) {
+            MisMedicosScreen(onVolver = { navController.popBackStack() })
         }
         composable(Rutas.Especialidades) {
             EspecialidadesScreen(
