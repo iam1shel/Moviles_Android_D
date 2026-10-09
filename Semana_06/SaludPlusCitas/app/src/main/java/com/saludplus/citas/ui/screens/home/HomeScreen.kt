@@ -5,16 +5,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.automirrored.filled.Assignment
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.MedicalServices
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Science
@@ -34,34 +39,52 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.saludplus.citas.data.repository.Repositorio
 import com.saludplus.citas.ui.theme.AzulClaro
 import com.saludplus.citas.ui.theme.TextoOscuro
 
+private data class AccesoPrincipal(
+    val titulo: String,
+    val icono: ImageVector,
+    val onClick: () -> Unit
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onEspecialidades: () -> Unit,
-    onMisCitas: () -> Unit,
+    onAgendarCita: () -> Unit,
+    onMisDatos: () -> Unit,
     onResultados: () -> Unit,
+    onSedes: () -> Unit,
+    onMisMedicos: () -> Unit,
+    onMisCitas: () -> Unit,
     onPerfil: () -> Unit,
     onNotificaciones: () -> Unit
 ) {
     var tab by remember { mutableIntStateOf(0) }
     val nombre = Repositorio.usuarioActual?.nombre ?: "Paciente"
-    val destacadas = Repositorio.especialidadesDestacadas()
+    val accesos = listOf(
+        AccesoPrincipal("Agendar Cita", Icons.Default.CalendarMonth, onAgendarCita),
+        AccesoPrincipal("Mis Datos", Icons.Default.Person, onMisDatos),
+        AccesoPrincipal("Resultados", Icons.Default.Science, onResultados),
+        AccesoPrincipal("Sedes", Icons.Default.LocationOn, onSedes),
+        AccesoPrincipal("Mis Médicos", Icons.Default.MedicalServices, onMisMedicos)
+    )
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Column {
-                        Text("Hola, $nombre", fontWeight = FontWeight.Bold)
+                        Text("SaludPlus", fontWeight = FontWeight.Bold)
                         Text(
-                            text = "¿Qué necesitas hoy?",
+                            text = "Hola, $nombre",
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -84,7 +107,7 @@ fun HomeScreen(
                 NavigationBarItem(
                     selected = tab == 1,
                     onClick = { tab = 1; onMisCitas() },
-                    icon = { Icon(Icons.Default.Assignment, contentDescription = null) },
+                    icon = { Icon(Icons.AutoMirrored.Filled.Assignment, contentDescription = null) },
                     label = { Text("Citas") }
                 )
                 NavigationBarItem(
@@ -108,65 +131,58 @@ fun HomeScreen(
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            Card(
-                onClick = onEspecialidades,
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
-            ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Text(
-                        text = "Agendar cita",
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "Elige especialidad, médico y horario",
-                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f)
-                    )
-                }
-            }
-            Spacer(Modifier.height(20.dp))
-            Text("Especialidades destacadas", style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(8.dp))
-            LazyRow(
+            Text(
+                text = "¿Qué necesitas hoy?",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = "Accesos principales",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.height(16.dp))
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(vertical = 4.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(bottom = 8.dp),
+                modifier = Modifier.fillMaxSize()
             ) {
-                items(destacadas, key = { it.id }) { esp ->
+                items(accesos) { acceso ->
                     Card(
                         modifier = Modifier
-                            .width(180.dp)
-                            .clickable {
-                                onEspecialidades()
-                            },
+                            .fillMaxWidth()
+                            .aspectRatio(1.15f)
+                            .clickable(onClick = acceso.onClick),
                         colors = CardDefaults.cardColors(
                             containerColor = AzulClaro,
                             contentColor = TextoOscuro
                         )
                     ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(esp.nombre, fontWeight = FontWeight.SemiBold)
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                imageVector = acceso.icono,
+                                contentDescription = acceso.titulo,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(40.dp)
+                            )
+                            Spacer(Modifier.height(12.dp))
                             Text(
-                                esp.descripcion,
-                                style = MaterialTheme.typography.bodySmall,
-                                maxLines = 2
+                                text = acceso.titulo,
+                                fontWeight = FontWeight.SemiBold,
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.titleSmall
                             )
                         }
                     }
-                }
-            }
-            Spacer(Modifier.height(20.dp))
-            Card(
-                onClick = onMisCitas,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Mis citas", fontWeight = FontWeight.SemiBold)
-                    Text(
-                        "Revisa o cancela tus reservas",
-                        style = MaterialTheme.typography.bodySmall
-                    )
                 }
             }
         }

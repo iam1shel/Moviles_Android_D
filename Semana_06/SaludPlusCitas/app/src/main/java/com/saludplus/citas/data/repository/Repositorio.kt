@@ -3,7 +3,13 @@
 import com.saludplus.citas.data.model.Cita
 import com.saludplus.citas.data.model.Especialidad
 import com.saludplus.citas.data.model.Medico
+import com.saludplus.citas.data.model.Sede
 import com.saludplus.citas.data.model.Usuario
+
+data class MedicosPorEspecialidad(
+    val especialidad: Especialidad,
+    val medicos: List<Medico>
+)
 
 object Repositorio {
     private val usuarios = mutableListOf(
@@ -17,11 +23,29 @@ object Repositorio {
         Especialidad(5, "Oftalmología", "Salud visual")
     )
     private val medicos = mutableListOf(
+        // Cardiología
         Medico(1, "Dra. Ana Ruiz", 1, 4.8, 12),
         Medico(2, "Dr. Luis Soto", 1, 4.5, 8),
+        Medico(6, "Dr. Marco Quispe", 1, 4.7, 10),
+        // Pediatría
         Medico(3, "Dra. Carmen Díaz", 2, 4.9, 15),
+        Medico(7, "Dr. Jorge Ramos", 2, 4.4, 9),
+        Medico(8, "Dra. Sofía Mendoza", 2, 4.6, 11),
+        // Dermatología
         Medico(4, "Dr. Pedro Vega", 3, 4.2, 6),
-        Medico(5, "Dra. Elena Paz", 4, 4.6, 10)
+        Medico(9, "Dra. Lucía Torres", 3, 4.8, 14),
+        Medico(10, "Dr. Andrés Flores", 3, 4.3, 7),
+        // Otras
+        Medico(5, "Dra. Elena Paz", 4, 4.6, 10),
+        Medico(11, "Dr. Renato Salas", 5, 4.5, 9)
+    )
+    private val sedes = listOf(
+        Sede(1, "La Molina"),
+        Sede(2, "Miraflores"),
+        Sede(3, "San Isidro"),
+        Sede(4, "Barranco"),
+        Sede(5, "Magdalena del Mar"),
+        Sede(6, "San Borja")
     )
     private val citas = mutableListOf<Cita>()
     private val horariosBase = listOf(
@@ -72,10 +96,19 @@ object Repositorio {
 
     fun obtenerCita(id: Int): Cita? = citas.find { it.id == id }
 
+    fun listarSedes(): List<Sede> = sedes
+
     fun medicosPorEspecialidad(especialidadId: Int): List<Medico> {
         return medicos
             .filter { it.especialidadId == especialidadId }
             .sortedByDescending { it.rating }
+    }
+
+    fun medicosAgrupadosPorEspecialidad(): List<MedicosPorEspecialidad> {
+        return especialidades.mapNotNull { esp ->
+            val lista = medicosPorEspecialidad(esp.id)
+            if (lista.isEmpty()) null else MedicosPorEspecialidad(esp, lista)
+        }
     }
 
     fun buscarMedicos(especialidadId: Int, query: String): List<Medico> {

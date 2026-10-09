@@ -34,7 +34,7 @@ fun PerfilScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Mi perfil") },
+                title = { Text("Mis Datos") },
                 navigationIcon = {
                     IconButton(onClick = onVolver) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
