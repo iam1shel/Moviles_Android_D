@@ -34,11 +34,13 @@ import com.saludplus.citas.data.repository.Repositorio
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EspecialidadesScreen(
+    sede: String? = null,
     onVolver: () -> Unit,
     onSeleccionar: (Int) -> Unit
 ) {
     var query by remember { mutableStateOf("") }
     val lista = Repositorio.buscarEspecialidades(query)
+    val sedeSeleccionada = sede?.takeIf { it.isNotBlank() }
 
     Scaffold(
         topBar = {
@@ -58,6 +60,14 @@ fun EspecialidadesScreen(
                 .padding(padding)
                 .padding(horizontal = 16.dp)
         ) {
+            if (sedeSeleccionada != null) {
+                Text(
+                    text = "Sede: $sedeSeleccionada",
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },

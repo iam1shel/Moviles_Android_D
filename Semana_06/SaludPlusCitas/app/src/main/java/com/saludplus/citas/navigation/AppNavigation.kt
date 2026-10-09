@@ -19,6 +19,8 @@ import com.saludplus.citas.ui.screens.citas.DetalleCitaScreen
 import com.saludplus.citas.ui.screens.citas.MisCitasScreen
 import com.saludplus.citas.ui.screens.home.HomeScreen
 import com.saludplus.citas.ui.screens.medicos.MisMedicosScreen
+import com.saludplus.citas.ui.screens.sedes.SedesScreen
+import com.saludplus.citas.data.repository.Repositorio
 import com.saludplus.citas.ui.screens.notificaciones.NotificacionesScreen
 import com.saludplus.citas.ui.screens.perfil.PerfilScreen
 import com.saludplus.citas.ui.screens.resultados.ResultadosScreen
@@ -60,19 +62,43 @@ fun AppNavigation() {
         }
         composable(Rutas.Home) {
             HomeScreen(
-                onEspecialidades = { navController.navigate(Rutas.Especialidades) },
+                onEspecialidades = {
+                    Repositorio.sedeSeleccionada = null
+                    navController.navigate(Rutas.especialidades())
+                },
                 onMisCitas = { navController.navigate(Rutas.MisCitas) },
                 onResultados = { navController.navigate(Rutas.Resultados) },
                 onPerfil = { navController.navigate(Rutas.Perfil) },
                 onNotificaciones = { navController.navigate(Rutas.Notificaciones) },
-                onMisMedicos = { navController.navigate(Rutas.MisMedicos) }
+                onMisMedicos = { navController.navigate(Rutas.MisMedicos) },
+                onSedes = { navController.navigate(Rutas.Sedes) }
+            )
+        }
+        composable(Rutas.Sedes) {
+            SedesScreen(
+                onVolver = { navController.popBackStack() },
+                onSeleccionarSede = { sede ->
+                    Repositorio.sedeSeleccionada = sede
+                    navController.navigate(Rutas.especialidades(sede))
+                }
             )
         }
         composable(Rutas.MisMedicos) {
             MisMedicosScreen(onVolver = { navController.popBackStack() })
         }
-        composable(Rutas.Especialidades) {
+        composable(
+            route = Rutas.Especialidades,
+            arguments = listOf(
+                navArgument("sede") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                    nullable = true
+                }
+            )
+        ) { entry ->
+            val sede = entry.arguments?.getString("sede").orEmpty()
             EspecialidadesScreen(
+                sede = sede,
                 onVolver = { navController.popBackStack() },
                 onSeleccionar = { id -> navController.navigate(Rutas.medicos(id)) }
             )
