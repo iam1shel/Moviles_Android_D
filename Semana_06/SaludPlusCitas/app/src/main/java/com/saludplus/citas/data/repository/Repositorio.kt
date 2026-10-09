@@ -5,6 +5,8 @@ import com.saludplus.citas.data.model.Especialidad
 import com.saludplus.citas.data.model.Medico
 import com.saludplus.citas.data.model.Sede
 import com.saludplus.citas.data.model.Usuario
+import java.time.DayOfWeek
+import java.time.LocalDate
 
 data class MedicosPorEspecialidad(
     val especialidad: Especialidad,
@@ -12,6 +14,22 @@ data class MedicosPorEspecialidad(
 )
 
 object Repositorio {
+    private val manana = listOf("08:00", "08:30", "09:00", "09:30", "10:00", "10:30")
+    private val mediaManana = listOf("09:00", "09:30", "10:00", "10:30", "11:00")
+    private val tarde = listOf("15:00", "15:30", "16:00", "16:30", "17:00")
+    private val mixto = listOf("09:00", "10:00", "11:00", "15:00", "16:00")
+
+    private val lunMieVie = setOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
+    private val marJue = setOf(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
+    private val lunVie = setOf(
+        DayOfWeek.MONDAY,
+        DayOfWeek.TUESDAY,
+        DayOfWeek.WEDNESDAY,
+        DayOfWeek.THURSDAY,
+        DayOfWeek.FRIDAY
+    )
+    private val lunMarJue = setOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
+
     private val usuarios = mutableListOf(
         Usuario(1, "Juan Pérez", "juan@correo.com", "999111222", "123456")
     )
@@ -26,32 +44,28 @@ object Repositorio {
     )
     private val medicos = mutableListOf(
         // Medicina General
-        Medico(12, "Dr. Pablo Herrera", 1, 4.6, 10, 98, "Disponible hoy", "11223"),
-        Medico(13, "Dra. Valeria Cruz", 1, 4.7, 9, 110, "Disponible mañana", "11224"),
-        Medico(14, "Dr. Diego León", 1, 4.5, 8, 87, "Disponible esta semana", "11225"),
+        Medico(12, "Dr. Pablo Herrera", 1, 4.6, 10, 98, "Disponible hoy", "11223", lunMieVie, manana),
+        Medico(13, "Dra. Valeria Cruz", 1, 4.7, 9, 110, "Disponible mañana", "11224", marJue, tarde),
+        Medico(14, "Dr. Diego León", 1, 4.5, 8, 87, "Disponible esta semana", "11225", lunVie, mediaManana),
         // Pediatría
-        Medico(3, "Dra. Carmen Díaz", 2, 4.9, 15, 142, "Disponible hoy", "22331"),
-        Medico(7, "Dr. Jorge Ramos", 2, 4.4, 9, 96, "Disponible mañana", "22332"),
-        Medico(8, "Dra. Sofía Mendoza", 2, 4.6, 11, 118, "Disponible esta semana", "22333"),
+        Medico(3, "Dra. Carmen Díaz", 2, 4.9, 15, 142, "Disponible hoy", "22331", lunMieVie, mediaManana),
+        Medico(7, "Dr. Jorge Ramos", 2, 4.4, 9, 96, "Disponible mañana", "22332", marJue, manana),
+        Medico(8, "Dra. Sofía Mendoza", 2, 4.6, 11, 118, "Disponible esta semana", "22333", lunMarJue, tarde),
         // Ginecología
-        Medico(15, "Dra. Ana Torres", 3, 4.9, 12, 120, "Disponible hoy", "12345"),
-        Medico(16, "Dra. María Gómez", 3, 4.8, 10, 105, "Disponible mañana", "12346"),
-        Medico(17, "Dra. Patricia Ríos", 3, 4.7, 11, 99, "Disponible esta semana", "12347"),
+        Medico(15, "Dra. Ana Torres", 3, 4.9, 12, 120, "Disponible hoy", "12345", lunMieVie, mixto),
+        Medico(16, "Dra. María Gómez", 3, 4.8, 10, 105, "Disponible mañana", "12346", marJue, mediaManana),
+        Medico(17, "Dra. Patricia Ríos", 3, 4.7, 11, 99, "Disponible esta semana", "12347", lunVie, tarde),
         // Cardiología
-        Medico(1, "Dra. Ana Ruiz", 4, 4.8, 12, 130, "Disponible hoy", "33441"),
-        Medico(2, "Dr. Luis Soto", 4, 4.5, 8, 88, "Disponible mañana", "33442"),
-        Medico(6, "Dr. Marco Quispe", 4, 4.7, 10, 101, "Disponible esta semana", "33443"),
+        Medico(1, "Dra. Ana Ruiz", 4, 4.8, 12, 130, "Disponible hoy", "33441", lunMieVie, manana),
+        Medico(2, "Dr. Luis Soto", 4, 4.5, 8, 88, "Disponible mañana", "33442", marJue, tarde),
+        Medico(6, "Dr. Marco Quispe", 4, 4.7, 10, 101, "Disponible esta semana", "33443", lunMarJue, mixto),
         // Dermatología
-        Medico(4, "Dr. Pedro Vega", 5, 4.2, 6, 74, "Disponible hoy", "44551"),
-        Medico(9, "Dra. Lucía Torres", 5, 4.8, 14, 126, "Disponible mañana", "44552"),
-        Medico(10, "Dr. Andrés Flores", 5, 4.3, 7, 81, "Disponible esta semana", "44553"),
+        Medico(4, "Dr. Pedro Vega", 5, 4.2, 6, 74, "Disponible hoy", "44551", lunMieVie, mediaManana),
+        Medico(9, "Dra. Lucía Torres", 5, 4.8, 14, 126, "Disponible mañana", "44552", marJue, manana),
+        Medico(10, "Dr. Andrés Flores", 5, 4.3, 7, 81, "Disponible esta semana", "44553", lunVie, tarde),
         // Traumatología / Oftalmología
-        Medico(5, "Dra. Elena Paz", 6, 4.6, 10, 93, "Disponible hoy", "55661"),
-        Medico(11, "Dr. Renato Salas", 7, 4.5, 9, 90, "Disponible mañana", "66771")
-    )
-    private val horariosBase = listOf(
-        "08:00", "08:30", "09:00", "09:30", "10:00",
-        "10:30", "11:00", "11:30", "12:00"
+        Medico(5, "Dra. Elena Paz", 6, 4.6, 10, 93, "Disponible hoy", "55661", lunMieVie, mixto),
+        Medico(11, "Dr. Renato Salas", 7, 4.5, 9, 90, "Disponible mañana", "66771", marJue, mediaManana)
     )
     private val sedes = listOf(
         Sede(1, "La Molina"),
@@ -69,12 +83,45 @@ object Repositorio {
 
     var sedeSeleccionada: String? = null
 
+    init {
+        // Algunas citas previas para que no todos los horarios estén libres.
+        seedCitasOcupadas()
+    }
+
+    private fun seedCitasOcupadas() {
+        val hoy = LocalDate.now()
+        fun isoEn(dias: Long) = hoy.plusDays(dias).toString()
+        listOf(
+            Triple(15, isoEn(0), "09:00"),
+            Triple(15, isoEn(0), "11:00"),
+            Triple(12, isoEn(0), "08:30"),
+            Triple(3, isoEn(1), "09:30"),
+            Triple(1, isoEn(2), "10:00"),
+            Triple(7, isoEn(1), "08:00"),
+            Triple(16, isoEn(2), "10:30")
+        ).forEach { (medicoId, fecha, hora) ->
+            if (medicoAtiendeEnFecha(medicoId, fecha) &&
+                medicos.find { it.id == medicoId }?.horariosAtencion?.contains(hora) == true
+            ) {
+                citas.add(
+                    Cita(
+                        id = siguienteCitaId++,
+                        usuarioId = 1,
+                        medicoId = medicoId,
+                        especialidadId = obtenerMedico(medicoId)?.especialidadId ?: 0,
+                        fecha = fecha,
+                        hora = hora
+                    )
+                )
+            }
+        }
+    }
+
     fun registrarUsuario(nombre: String, correo: String, telefono: String, clave: String): Boolean {
         if (usuarios.any { it.correo.equals(correo, ignoreCase = true) }) return false
         val id = (usuarios.maxOfOrNull { it.id } ?: 0) + 1
         val nuevo = Usuario(id, nombre, correo, telefono, clave)
         usuarios.add(nuevo)
-        // No inicia sesión automáticamente: el usuario debe loguearse después.
         return true
     }
 
@@ -129,12 +176,31 @@ object Repositorio {
         return base.filter { it.nombre.contains(query, ignoreCase = true) }
     }
 
+    fun medicoAtiendeEnFecha(medicoId: Int, fechaIso: String): Boolean {
+        val medico = obtenerMedico(medicoId) ?: return false
+        val fecha = LocalDate.parse(fechaIso)
+        if (fecha.isBefore(LocalDate.now())) return false
+        return fecha.dayOfWeek in medico.diasAtencion
+    }
+
+    /** Días hábiles de la semana en los que el médico atiende. */
+    fun diasDisponiblesMedico(medicoId: Int, semanaInicio: LocalDate): List<LocalDate> {
+        val medico = obtenerMedico(medicoId) ?: return emptyList()
+        val lunes = semanaInicio.with(DayOfWeek.MONDAY)
+        val hoy = LocalDate.now()
+        return (0..6).map { lunes.plusDays(it.toLong()) }
+            .filter { !it.isBefore(hoy) }
+            .filter { it.dayOfWeek in medico.diasAtencion }
+    }
+
     fun horariosDisponibles(medicoId: Int, fecha: String): List<String> {
+        val medico = obtenerMedico(medicoId) ?: return emptyList()
+        if (!medicoAtiendeEnFecha(medicoId, fecha)) return emptyList()
         val ocupados = citas
             .filter { it.medicoId == medicoId && it.fecha == fecha }
             .map { it.hora }
             .toSet()
-        return horariosBase.filter { it !in ocupados }
+        return medico.horariosAtencion.filter { it !in ocupados }
     }
 
     fun agendarCita(
@@ -144,10 +210,8 @@ object Repositorio {
         fecha: String,
         hora: String
     ): Cita? {
-        val yaExiste = citas.any {
-            it.medicoId == medicoId && it.fecha == fecha && it.hora == hora
-        }
-        if (yaExiste) return null
+        if (!medicoAtiendeEnFecha(medicoId, fecha)) return null
+        if (hora !in horariosDisponibles(medicoId, fecha)) return null
         val cita = Cita(
             id = siguienteCitaId++,
             usuarioId = usuarioId,
@@ -170,7 +234,6 @@ object Repositorio {
         return citas.removeIf { it.id == citaId }
     }
 
-    /** Días fijos para Fase 1 (calendario dinámico en con-ia). */
     fun diasFijosFase1(): List<String> = listOf(
         "2026-10-13",
         "2026-10-14",

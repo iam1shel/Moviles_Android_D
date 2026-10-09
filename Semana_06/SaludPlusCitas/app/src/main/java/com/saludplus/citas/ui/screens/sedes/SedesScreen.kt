@@ -59,7 +59,7 @@ fun SedesScreen(
         ) {
             item {
                 Text(
-                    text = "Elige una sede para agendar tu cita",
+                    text = "Primero elige una sede para continuar con tu cita",
                     color = AzulGris,
                     modifier = Modifier.padding(bottom = 4.dp)
                 )

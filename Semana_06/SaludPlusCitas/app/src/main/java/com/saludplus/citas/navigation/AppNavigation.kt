@@ -77,8 +77,9 @@ fun AppNavigation() {
         composable(Rutas.Home) {
             HomeScreen(
                 onAgendarCita = {
+                    // Agendar Cita siempre empieza por Sedes.
                     Repositorio.sedeSeleccionada = null
-                    navController.navigate(Rutas.especialidades())
+                    navController.navigate(Rutas.Sedes)
                 },
                 onMisDatos = { navController.navigate(Rutas.Perfil) },
                 onResultados = { navController.navigate(Rutas.Resultados) },
