@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="morado">#FF673AB7</color>
-    <color name="lavanda">#FFEDE7F6</color>
+    <color name="azul_salud">#FF1E88E5</color>
+    <color name="azul_oscuro">#FF0D1B3E</color>
+    <color name="azul_claro">#FFE3F2FD</color>
     <color name="white">#FFFFFFFF</color>
 </resources>

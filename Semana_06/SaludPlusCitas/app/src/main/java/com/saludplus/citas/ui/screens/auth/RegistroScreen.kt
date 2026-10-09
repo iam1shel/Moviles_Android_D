@@ -4,38 +4,45 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.saludplus.citas.data.repository.Repositorio
+import com.saludplus.citas.ui.components.CampoConIcono
+import com.saludplus.citas.ui.components.SaludPlusPrimaryButton
+import com.saludplus.citas.ui.theme.AzulGris
+import com.saludplus.citas.ui.theme.AzulPrimario
+import com.saludplus.citas.ui.theme.AzulTexto
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegistroScreen(
     onVolver: () -> Unit,
     onRegistrado: () -> Unit,
-    onTerminos: () -> Unit
+    onTerminos: () -> Unit,
+    onIrLogin: () -> Unit = onVolver
 ) {
     var nombre by remember { mutableStateOf("") }
     var correo by remember { mutableStateOf("") }
@@ -43,84 +50,103 @@ fun RegistroScreen(
     var clave by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
 
-    fun campoVacio(v: String) = v.isBlank()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 24.dp, vertical = 28.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.height(20.dp))
+        Text(
+            text = "Crear cuenta",
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold,
+            color = AzulTexto
+        )
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(
+            text = "Regístrate para agendar tus citas",
+            color = AzulGris,
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Spacer(modifier = Modifier.height(28.dp))
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Crear cuenta") },
-                navigationIcon = {
-                    IconButton(onClick = onVolver) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
-                    }
+        CampoConIcono(
+            value = nombre,
+            onValueChange = { nombre = it; error = null },
+            label = "Nombre completo",
+            icon = Icons.Default.Person
+        )
+        Spacer(modifier = Modifier.height(14.dp))
+        CampoConIcono(
+            value = telefono,
+            onValueChange = { telefono = it; error = null },
+            label = "Teléfono",
+            icon = Icons.Default.Phone
+        )
+        Spacer(modifier = Modifier.height(14.dp))
+        CampoConIcono(
+            value = correo,
+            onValueChange = { correo = it; error = null },
+            label = "Correo (opcional)",
+            icon = Icons.Default.Email
+        )
+        Spacer(modifier = Modifier.height(14.dp))
+        CampoConIcono(
+            value = clave,
+            onValueChange = { clave = it; error = null },
+            label = "Contraseña",
+            icon = Icons.Default.Lock,
+            visualTransformation = PasswordVisualTransformation()
+        )
+
+        error?.let {
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(text = it, color = MaterialTheme.colorScheme.error)
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+        SaludPlusPrimaryButton(
+            text = "Registrarme",
+            onClick = {
+                when {
+                    nombre.isBlank() || telefono.isBlank() || clave.isBlank() ->
+                        error = "Completa nombre, teléfono y contraseña"
+                    clave.length < 4 -> error = "La contraseña debe tener al menos 4 caracteres"
+                    !Repositorio.registrarUsuario(
+                        nombre = nombre,
+                        correo = correo.ifBlank { "$telefono@saludplus.local" },
+                        telefono = telefono,
+                        clave = clave
+                    ) -> error = "Ese correo ya está registrado"
+                    else -> onRegistrado()
                 }
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(24.dp)
-                .verticalScroll(rememberScrollState())
-        ) {
-            OutlinedTextField(
-                value = nombre,
-                onValueChange = { nombre = it; error = null },
-                label = { Text("Nombre completo") },
-                isError = campoVacio(nombre) && error != null,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(12.dp))
-            OutlinedTextField(
-                value = correo,
-                onValueChange = { correo = it; error = null },
-                label = { Text("Correo") },
-                isError = campoVacio(correo) && error != null,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(12.dp))
-            OutlinedTextField(
-                value = telefono,
-                onValueChange = { telefono = it; error = null },
-                label = { Text("Teléfono") },
-                isError = campoVacio(telefono) && error != null,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(12.dp))
-            OutlinedTextField(
-                value = clave,
-                onValueChange = { clave = it; error = null },
-                label = { Text("Contraseña") },
-                visualTransformation = PasswordVisualTransformation(),
-                isError = campoVacio(clave) && error != null,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = "Al continuar aceptas los Términos y condiciones",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.clickable(onClick = onTerminos)
-            )
-            error?.let {
-                Spacer(Modifier.height(8.dp))
-                Text(text = it, color = MaterialTheme.colorScheme.error)
             }
-            Spacer(Modifier.height(20.dp))
-            Button(
-                onClick = {
-                    when {
-                        listOf(nombre, correo, telefono, clave).any { it.isBlank() } ->
-                            error = "Completa todos los campos"
-                        clave.length < 4 -> error = "La contraseña debe tener al menos 4 caracteres"
-                        !Repositorio.registrarUsuario(nombre, correo, telefono, clave) ->
-                            error = "Ese correo ya está registrado"
-                        else -> onRegistrado()
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) { Text("Registrarme") }
-        }
+        )
+        Spacer(modifier = Modifier.height(14.dp))
+        Text(
+            text = buildAnnotatedString {
+                append("Al registrarte aceptas nuestros\n")
+                withStyle(SpanStyle(color = AzulPrimario, fontWeight = FontWeight.Bold)) {
+                    append("Términos y Condiciones")
+                }
+            },
+            textAlign = TextAlign.Center,
+            color = AzulGris,
+            modifier = Modifier.clickable(onClick = onTerminos)
+        )
+        Spacer(modifier = Modifier.height(28.dp))
+        Text(
+            text = buildAnnotatedString {
+                append("¿Ya tienes cuenta? ")
+                withStyle(SpanStyle(color = AzulPrimario, fontWeight = FontWeight.Bold)) {
+                    append("Iniciar sesión")
+                }
+            },
+            modifier = Modifier.clickable(onClick = onIrLogin),
+            color = AzulTexto
+        )
+        Spacer(modifier = Modifier.height(12.dp))
     }
 }
