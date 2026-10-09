@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.saludplus.citas.data.repository.Repositorio
 import com.saludplus.citas.ui.screens.agendamiento.CitaExitosaScreen
 import com.saludplus.citas.ui.screens.agendamiento.ConfirmarCitaScreen
 import com.saludplus.citas.ui.screens.agendamiento.EspecialidadesScreen
@@ -43,7 +44,13 @@ fun AppNavigation() {
                         popUpTo(Rutas.Splash) { inclusive = true }
                     }
                 },
-                onTerminos = { navController.navigate(Rutas.Terminos) }
+                onTerminos = { navController.navigate(Rutas.Terminos) },
+                onIrLogin = {
+                    navController.navigate(Rutas.Login) {
+                        popUpTo(Rutas.Splash) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
             )
         }
         composable(Rutas.Login) {
@@ -53,6 +60,12 @@ fun AppNavigation() {
                     navController.navigate(Rutas.Home) {
                         popUpTo(Rutas.Splash) { inclusive = true }
                     }
+                },
+                onIrRegistro = {
+                    navController.navigate(Rutas.Registro) {
+                        popUpTo(Rutas.Splash) { inclusive = false }
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -61,7 +74,10 @@ fun AppNavigation() {
         }
         composable(Rutas.Home) {
             HomeScreen(
-                onAgendarCita = { navController.navigate(Rutas.especialidades()) },
+                onAgendarCita = {
+                    Repositorio.sedeSeleccionada = null
+                    navController.navigate(Rutas.especialidades())
+                },
                 onMisDatos = { navController.navigate(Rutas.Perfil) },
                 onResultados = { navController.navigate(Rutas.Resultados) },
                 onSedes = { navController.navigate(Rutas.Sedes) },
@@ -75,6 +91,7 @@ fun AppNavigation() {
             SedesScreen(
                 onVolver = { navController.popBackStack() },
                 onSeleccionarSede = { sede ->
+                    Repositorio.sedeSeleccionada = sede
                     navController.navigate(Rutas.especialidades(sede))
                 }
             )

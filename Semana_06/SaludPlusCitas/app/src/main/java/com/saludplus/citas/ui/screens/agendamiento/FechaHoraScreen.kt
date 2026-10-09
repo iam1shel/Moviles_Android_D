@@ -1,7 +1,10 @@
 package com.saludplus.citas.ui.screens.agendamiento
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -10,25 +13,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,12 +34,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.saludplus.citas.data.repository.Repositorio
+import com.saludplus.citas.ui.components.SaludPlusPrimaryButton
+import com.saludplus.citas.ui.components.SaludPlusTopBar
+import com.saludplus.citas.ui.components.TarjetaMedicoResumen
+import com.saludplus.citas.ui.theme.AzulPrimario
+import com.saludplus.citas.ui.theme.AzulTexto
+import com.saludplus.citas.ui.theme.GrisBorde
+import com.saludplus.citas.ui.theme.GrisFondo
 import java.time.LocalDate
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FechaHoraScreen(
     especialidadId: Int,
@@ -56,7 +63,6 @@ fun FechaHoraScreen(
     }
     var hora by remember { mutableStateOf<String?>(null) }
 
-    // Si la semana cambia y el día elegido ya no está, reinicia selección.
     if (dias.none { CalendarioUtils.toIso(it) == fechaSeleccionada }) {
         fechaSeleccionada = CalendarioUtils.toIso(dias.first())
         hora = null
@@ -64,17 +70,12 @@ fun FechaHoraScreen(
 
     val horarios = Repositorio.horariosDisponibles(medicoId, fechaSeleccionada)
     val medico = Repositorio.obtenerMedico(medicoId)
+    val especialidad = Repositorio.obtenerEspecialidad(especialidadId)
 
     Scaffold(
+        containerColor = Color.White,
         topBar = {
-            TopAppBar(
-                title = { Text(medico?.nombre ?: "Fecha y hora") },
-                navigationIcon = {
-                    IconButton(onClick = onVolver) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
-                    }
-                }
-            )
+            SaludPlusTopBar(title = "Seleccionar fecha y hora", onVolver = onVolver)
         }
     ) { padding ->
         Column(
@@ -83,6 +84,15 @@ fun FechaHoraScreen(
                 .padding(padding)
                 .padding(16.dp)
         ) {
+            if (medico != null) {
+                TarjetaMedicoResumen(
+                    medico = medico,
+                    especialidad = especialidad?.nombre ?: "",
+                    cmp = null
+                )
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -101,8 +111,9 @@ fun FechaHoraScreen(
                 }
                 Text(
                     text = CalendarioUtils.tituloMesAnio(semanaInicio),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = AzulTexto,
+                    fontSize = 18.sp
                 )
                 IconButton(
                     onClick = {
@@ -114,54 +125,80 @@ fun FechaHoraScreen(
                 }
             }
 
-            Spacer(Modifier.height(8.dp))
-            Text("Elige un día hábil", style = MaterialTheme.typography.titleSmall)
-            Spacer(Modifier.height(8.dp))
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Spacer(modifier = Modifier.height(12.dp))
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 items(dias, key = { it.toString() }) { dia ->
                     val iso = CalendarioUtils.toIso(dia)
-                    FilterChip(
-                        selected = fechaSeleccionada == iso,
-                        onClick = {
-                            fechaSeleccionada = iso
-                            hora = null
-                        },
-                        label = { Text(CalendarioUtils.etiquetaCorta(dia)) }
-                    )
-                }
-            }
-
-            Spacer(Modifier.height(16.dp))
-            Text("Horarios disponibles", style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(8.dp))
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                modifier = Modifier.weight(1f),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(bottom = 12.dp)
-            ) {
-                items(horarios) { h ->
-                    Surface(
-                        onClick = { hora = h },
-                        border = BorderStroke(
-                            1.dp,
-                            if (hora == h) MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.outline
-                        ),
-                        shape = MaterialTheme.shapes.medium,
-                        color = if (hora == h) MaterialTheme.colorScheme.primaryContainer
-                        else MaterialTheme.colorScheme.surface
+                    val selected = fechaSeleccionada == iso
+                    Column(
+                        modifier = Modifier
+                            .width(64.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(if (selected) AzulPrimario else Color.White)
+                            .border(
+                                1.dp,
+                                if (selected) AzulPrimario else GrisBorde,
+                                RoundedCornerShape(16.dp)
+                            )
+                            .clickable {
+                                fechaSeleccionada = iso
+                                hora = null
+                            }
+                            .padding(vertical = 14.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = h, modifier = Modifier.padding(12.dp))
+                        val partes = CalendarioUtils.etiquetaCorta(dia).split(" ")
+                        Text(
+                            text = partes.getOrElse(0) { "" },
+                            color = if (selected) Color.White else AzulTexto,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Text(
+                            text = partes.getOrElse(1) { "" },
+                            color = if (selected) Color.White else AzulTexto,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
                     }
                 }
             }
-            Button(
+
+            Spacer(modifier = Modifier.height(20.dp))
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                contentPadding = PaddingValues(bottom = 12.dp)
+            ) {
+                items(horarios) { h ->
+                    val selected = hora == h
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(if (selected) AzulPrimario else GrisFondo)
+                            .border(
+                                1.dp,
+                                if (selected) AzulPrimario else GrisBorde,
+                                RoundedCornerShape(14.dp)
+                            )
+                            .clickable { hora = h }
+                            .padding(vertical = 14.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = h,
+                            color = if (selected) Color.White else AzulTexto,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+            }
+            SaludPlusPrimaryButton(
+                text = "Continuar",
                 onClick = { onContinuar(fechaSeleccionada, hora!!) },
-                enabled = hora != null,
-                modifier = Modifier.fillMaxWidth()
-            ) { Text("Continuar") }
+                enabled = hora != null
+            )
         }
     }
 }
