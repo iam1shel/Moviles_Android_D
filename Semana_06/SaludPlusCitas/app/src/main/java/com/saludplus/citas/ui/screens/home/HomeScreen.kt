@@ -79,7 +79,6 @@ private data class AccesoHome(
 
 @Composable
 fun HomeScreen(
-    onAgendarCita: () -> Unit,
     onMisDatos: () -> Unit,
     onResultados: () -> Unit,
     onSedes: () -> Unit,
@@ -91,9 +90,8 @@ fun HomeScreen(
     var tab by remember { mutableIntStateOf(0) }
     val nombre = Repositorio.usuarioActual?.nombre?.substringBefore(" ") ?: "Juan"
     val destacadas = Repositorio.especialidadesDestacadas()
-    // 5 accesos principales pedidos: Agendar Cita, Mis Datos, Resultados, Sedes, Mis Médicos
+    // Accesos: Mis Datos, Resultados, Sedes (agendar), Mis Médicos
     val accesos = listOf(
-        AccesoHome("Agendar Cita", Icons.Default.CalendarMonth, AzulClaro, AzulPrimario, onAgendarCita),
         AccesoHome("Mis Datos", Icons.Default.Person, MoradoSuave, MoradoTexto, onMisDatos),
         AccesoHome("Resultados", Icons.Default.Description, NaranjaSuave, NaranjaTexto, onResultados),
         AccesoHome("Sedes", Icons.Default.LocationOn, VerdeSuave, VerdeTexto, onSedes),
@@ -181,14 +179,6 @@ fun HomeScreen(
                 AccesoCard(accesos[2], Modifier.weight(1f))
                 AccesoCard(accesos[3], Modifier.weight(1f))
             }
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                AccesoCard(accesos[4], Modifier.weight(1f))
-                Spacer(modifier = Modifier.weight(1f))
-            }
 
             Spacer(modifier = Modifier.height(28.dp))
             Row(
@@ -202,7 +192,7 @@ fun HomeScreen(
                     color = AzulTexto,
                     fontSize = 18.sp
                 )
-                TextButton(onClick = onAgendarCita) {
+                TextButton(onClick = onSedes) {
                     Text("Ver todas", color = AzulPrimario, fontWeight = FontWeight.SemiBold)
                 }
             }
@@ -212,7 +202,7 @@ fun HomeScreen(
             ) {
                 items(destacadas, key = { it.id }) { esp ->
                     Card(
-                        onClick = onAgendarCita,
+                        onClick = onSedes,
                         modifier = Modifier.width(120.dp),
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(containerColor = Color.White),
