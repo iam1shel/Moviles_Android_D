@@ -47,7 +47,7 @@ class SesionViewModel(
         }
     }
 
-    fun login(correo: String, clave: String, rolSeleccionado: Rol) {
+    fun login(correo: String, clave: String, rolSeleccionado: Rol, onOk: (Rol) -> Unit) {
         viewModelScope.launch {
             if (correo.isBlank() || clave.isBlank()) {
                 _error.value = "Completa correo y contraseña"
@@ -60,7 +60,9 @@ class SesionViewModel(
                     _error.value = "Este usuario no corresponde al perfil seleccionado"
                 else -> {
                     _error.value = null
+                    _usuarioActual.value = usuario
                     prefs.guardarSesion(usuario.rol, usuario.id)
+                    onOk(rolSeleccionado)
                 }
             }
         }
@@ -83,6 +85,7 @@ class SesionViewModel(
     }
 
     fun cerrarSesion() {
+        _usuarioActual.value = null
         viewModelScope.launch { prefs.cerrarSesion() }
     }
 

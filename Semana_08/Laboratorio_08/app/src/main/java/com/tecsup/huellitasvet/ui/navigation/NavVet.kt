@@ -17,6 +17,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -68,6 +69,18 @@ import com.tecsup.huellitasvet.viewmodel.ServiciosViewModel
 import com.tecsup.huellitasvet.viewmodel.SesionViewModel
 import com.tecsup.huellitasvet.viewmodel.VetViewModelFactory
 
+private fun irALogin(nav: NavHostController) {
+    nav.navigate(Rutas.Login) {
+        popUpTo(0) { inclusive = true }
+        launchSingleTop = true
+    }
+}
+
+private fun cerrarYVolverAlLogin(nav: NavHostController, sesion: SesionViewModel) {
+    irALogin(nav)
+    sesion.cerrarSesion()
+}
+
 @Composable
 fun NavVet() {
     val app = LocalContext.current.applicationContext as VetApp
@@ -100,7 +113,10 @@ fun NavVet() {
         }
         composable(Rutas.Dueno) {
             val usuario = sesion.usuarioActual.collectAsState().value
-            if (usuario == null) return@composable
+            if (usuario == null) {
+                LaunchedEffect(Unit) { irALogin(nav) }
+                return@composable
+            }
             VetTheme(rol = Rol.CLIENTE, darkTheme = oscuro) {
                 GrafoDueno(
                     usuario = usuario,
@@ -108,16 +124,16 @@ fun NavVet() {
                     onCambiarPerfil = { _ ->
                         nav.navigate(Rutas.Vet) { popUpTo(0) { inclusive = true } }
                     },
-                    onCerrar = {
-                        sesion.cerrarSesion()
-                        nav.navigate(Rutas.Login) { popUpTo(0) { inclusive = true } }
-                    }
+                    onCerrar = { cerrarYVolverAlLogin(nav, sesion) }
                 )
             }
         }
         composable(Rutas.Vet) {
             val usuario = sesion.usuarioActual.collectAsState().value
-            if (usuario == null) return@composable
+            if (usuario == null) {
+                LaunchedEffect(Unit) { irALogin(nav) }
+                return@composable
+            }
             VetTheme(rol = Rol.ADMIN, darkTheme = oscuro) {
                 GrafoVeterinario(
                     usuario = usuario,
@@ -125,24 +141,21 @@ fun NavVet() {
                     onCambiarPerfil = { _ ->
                         nav.navigate(Rutas.Dueno) { popUpTo(0) { inclusive = true } }
                     },
-                    onCerrar = {
-                        sesion.cerrarSesion()
-                        nav.navigate(Rutas.Login) { popUpTo(0) { inclusive = true } }
-                    }
+                    onCerrar = { cerrarYVolverAlLogin(nav, sesion) }
                 )
             }
         }
         composable(Rutas.Admin) {
             val usuario = sesion.usuarioActual.collectAsState().value
-            if (usuario == null) return@composable
+            if (usuario == null) {
+                LaunchedEffect(Unit) { irALogin(nav) }
+                return@composable
+            }
             VetTheme(rol = Rol.ADMINISTRADOR, darkTheme = oscuro) {
                 GrafoAdministrador(
                     usuario = usuario,
                     sesion = sesion,
-                    onCerrar = {
-                        sesion.cerrarSesion()
-                        nav.navigate(Rutas.Login) { popUpTo(0) { inclusive = true } }
-                    }
+                    onCerrar = { cerrarYVolverAlLogin(nav, sesion) }
                 )
             }
         }
