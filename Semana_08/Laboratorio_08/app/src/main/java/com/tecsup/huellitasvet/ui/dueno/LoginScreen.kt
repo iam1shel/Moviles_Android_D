@@ -51,7 +51,6 @@ fun LoginScreen(
     var correo by remember { mutableStateOf("ana@correo.test") }
     var clave by remember { mutableStateOf("1234") }
     val error by vm.error.collectAsState()
-    val usuario by vm.usuarioActual.collectAsState()
     val snack = remember { SnackbarHostState() }
 
     LaunchedEffect(rol) {
@@ -74,12 +73,6 @@ fun LoginScreen(
         error?.let {
             snack.showSnackbar(it)
             vm.limpiarError()
-        }
-    }
-    LaunchedEffect(usuario) {
-        usuario?.let {
-            val r = Rol.entries.find { rol -> rol.name == it.rol } ?: Rol.CLIENTE
-            onIngreso(r)
         }
     }
 
@@ -130,7 +123,7 @@ fun LoginScreen(
                         .clickable { }
                 )
                 Spacer(Modifier.height(28.dp))
-                VetButton("Ingresar", onClick = { vm.login(correo, clave, rol) })
+                VetButton("Ingresar", onClick = { vm.login(correo, clave, rol, onIngreso) })
                 if (rol == Rol.CLIENTE) {
                     Spacer(Modifier.height(14.dp))
                     Text(
