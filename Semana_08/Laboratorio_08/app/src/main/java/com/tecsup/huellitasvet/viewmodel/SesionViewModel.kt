@@ -50,8 +50,12 @@ class SesionViewModel(
 
     init {
         viewModelScope.launch {
-            prefs.usuarioId.collect { id ->
-                _usuarioActual.value = if (id == 0) null else repo.obtenerUsuario(id)
+            prefs.sesionGuardada.collect { (perfil, id) ->
+                _usuarioActual.value = when {
+                    id == 0 -> null
+                    perfil == Rol.ADMINISTRADOR.name -> repo.obtenerAdministrador(id)?.comoUsuario()
+                    else -> repo.obtenerUsuario(id)
+                }
             }
         }
     }
@@ -62,8 +66,19 @@ class SesionViewModel(
                 _error.value = "Completa correo y contraseña"
                 return@launch
             }
-            val usuario = repo.login(correo.trim(), clave)
+            val correoLimpio = correo.trim()
+            val usuario = if (rolSeleccionado == Rol.ADMINISTRADOR) {
+                repo.loginAdministrador(correoLimpio, clave)?.comoUsuario()
+            } else {
+                repo.login(correoLimpio, clave)
+            }
+            val existeEnOtroPerfil = usuario == null && when (rolSeleccionado) {
+                Rol.ADMINISTRADOR -> repo.login(correoLimpio, clave) != null
+                else -> repo.loginAdministrador(correoLimpio, clave) != null
+            }
             when {
+                usuario == null && existeEnOtroPerfil ->
+                    _error.value = "Este usuario no corresponde al perfil seleccionado"
                 usuario == null -> _error.value = "Correo o contraseña incorrectos"
                 usuario.rol != rolSeleccionado.name ->
                     _error.value = "Este usuario no corresponde al perfil seleccionado"
@@ -100,7 +115,10 @@ class SesionViewModel(
             if (!correoValido) {
                 _errorCorreo.value = "Ingresa un correo válido"
                 ok = false
-            } else if (repo.buscarPorCorreo(correoLimpio) != null) {
+            } else if (
+                repo.buscarPorCorreo(correoLimpio) != null ||
+                repo.buscarAdministradorPorCorreo(correoLimpio) != null
+            ) {
                 _errorCorreo.value = "Este correo ya está registrado"
                 ok = false
             } else _errorCorreo.value = null

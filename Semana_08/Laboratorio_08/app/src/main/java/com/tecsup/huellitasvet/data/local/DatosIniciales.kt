@@ -1,5 +1,6 @@
 package com.tecsup.huellitasvet.data.local
 
+import com.tecsup.huellitasvet.data.local.entity.Administrador
 import com.tecsup.huellitasvet.data.local.entity.Cita
 import com.tecsup.huellitasvet.data.local.entity.Mascota
 import com.tecsup.huellitasvet.data.local.entity.Servicio
@@ -25,10 +26,10 @@ object DatosIniciales {
         val usuarios = listOf(
             Usuario(id = 1, nombre = "Ana García", correo = "ana@correo.test", clave = "1234", rol = Rol.CLIENTE.name),
             Usuario(id = 2, nombre = "Luis Ramos", correo = "luis@correo.test", clave = "1234", rol = Rol.CLIENTE.name),
-            Usuario(id = 3, nombre = "Dra. Rojas", correo = "vet@huellitas.test", clave = "admin", rol = Rol.ADMIN.name),
-            administrador()
+            Usuario(id = 3, nombre = "Dra. Rojas", correo = "vet@huellitas.test", clave = "admin", rol = Rol.ADMIN.name)
         )
         db.usuarioDao().insertarTodos(usuarios)
+        db.administradorDao().insertar(administrador())
 
         val mascotas = listOf(
             Mascota(id = 1, duenoId = 1, nombre = "Luna", especie = Especie.GATO.name, raza = "Siamesa", anioNacimiento = 2023, fechaNacimiento = "2023-05-14", peso = 4.3, sexo = Sexo.HEMBRA.name),
@@ -57,17 +58,16 @@ object DatosIniciales {
     }
 
     suspend fun asegurarAdministrador(db: VetDatabase) {
-        if (db.usuarioDao().obtenerPorRol(Rol.ADMINISTRADOR.name) != null) return
-        db.usuarioDao().insertar(administrador(id = 0))
+        if (db.administradorDao().contar() != 0) return
+        db.administradorDao().insertar(administrador(id = 0))
     }
 
-    private fun administrador(id: Int = 4) = Usuario(
+    private fun administrador(id: Int = 1) = Administrador(
         id = id,
         codigo = "ADM-001",
         nombre = "Camila",
         apellidos = "Torres",
         correo = "admin@huellitas.test",
-        clave = "admin123",
-        rol = Rol.ADMINISTRADOR.name
+        clave = "admin123"
     )
 }

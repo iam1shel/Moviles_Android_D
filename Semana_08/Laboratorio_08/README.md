@@ -5,7 +5,7 @@
 **Tecnología:** Kotlin + Jetpack Compose + Material 3, Room 2.6.1, DataStore, Navigation Compose  
 **Patrón:** MVVM + Repository (interface)
 
-App de una veterinaria con tres perfiles en el mismo dispositivo. El dueño registra mascotas, pide citas y ve el historial clínico. El veterinario ve la agenda, confirma, atiende y administra servicios. El administrador registra mascotas y elige la raza de una lista. Los tres comparten la misma base Room (`huellitasvet.db`). Datos ficticios (Ley 29733).
+App de una veterinaria con tres perfiles en el mismo dispositivo. El dueño registra mascotas, pide citas y ve el historial clínico. El veterinario ve la agenda, confirma, atiende y administra servicios. El administrador registra mascotas y elige la raza de una lista. Dueños y veterinario viven en `usuarios`. Los administradores tienen su propia tabla `administradores` (código, nombre, apellidos, correo y contraseña). Todo está en la misma base Room (`huellitasvet.db`). Datos ficticios (Ley 29733).
 
 Cuentas de prueba:
 
@@ -24,8 +24,8 @@ com.tecsup.huellitasvet
 ├── VetApp.kt
 ├── data
 │   ├── local
-│   │   ├── entity          Servicio, Usuario, Mascota, Cita
-│   │   ├── dao             ServicioDao, UsuarioDao, MascotaDao, CitaDao
+│   │   ├── entity          Servicio, Usuario, Mascota, Cita, Administrador
+│   │   ├── dao             ServicioDao, UsuarioDao, MascotaDao, CitaDao, AdministradorDao
 │   │   ├── relation        MascotaConDueno, CitaConDetalle
 │   │   ├── VetDatabase.kt
 │   │   └── DatosIniciales.kt
