@@ -10,6 +10,10 @@ val AzulVet = Color(0xFF1D4ED8)
 val AzulContenedor = Color(0xFFDBEAFE)
 val AzulFondo = Color(0xFFF7F9FF)
 
+val AmbarAdmin = Color(0xFFB45309)
+val AmbarContenedor = Color(0xFFFEF3C7)
+val AmbarFondo = Color(0xFFFFFBF5)
+
 val PendienteColor = Color(0xFFD97706)
 val ConfirmadaColor = Color(0xFF16A34A)
 val AtendidaColor = Color(0xFF475569)

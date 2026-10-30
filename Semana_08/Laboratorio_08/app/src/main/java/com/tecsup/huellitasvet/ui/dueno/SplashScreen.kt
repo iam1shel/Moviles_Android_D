@@ -31,7 +31,8 @@ fun SplashScreen(
     vm: SesionViewModel,
     onLogin: () -> Unit,
     onDueno: () -> Unit,
-    onVet: () -> Unit
+    onVet: () -> Unit,
+    onAdmin: () -> Unit
 ) {
     val perfil by vm.perfilActivo.collectAsState()
     val usuarioId by vm.usuarioId.collectAsState()
@@ -39,6 +40,7 @@ fun SplashScreen(
         delay(900)
         when {
             usuarioId != 0 && perfil == Rol.ADMIN.name -> onVet()
+            usuarioId != 0 && perfil == Rol.ADMINISTRADOR.name -> onAdmin()
             usuarioId != 0 && perfil == Rol.CLIENTE.name -> onDueno()
             else -> onLogin()
         }

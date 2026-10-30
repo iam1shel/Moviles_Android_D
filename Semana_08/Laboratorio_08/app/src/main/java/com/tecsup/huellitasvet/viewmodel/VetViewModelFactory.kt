@@ -25,6 +25,7 @@ class VetViewModelFactory(
             AgendaViewModel::class.java -> AgendaViewModel(repo)
             AtenderCitaViewModel::class.java -> AtenderCitaViewModel(repo, citaId)
             PacientesViewModel::class.java -> PacientesViewModel(repo)
+            AdministracionViewModel::class.java -> AdministracionViewModel(repo)
             else -> error("ViewModel no soportado: ${modelClass.name}")
         }
         return vm as T

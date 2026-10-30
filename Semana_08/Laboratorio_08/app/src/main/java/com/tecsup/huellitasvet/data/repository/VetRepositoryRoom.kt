@@ -25,6 +25,9 @@ class VetRepositoryRoom(private val db: VetDatabase) : VetRepository {
     override suspend fun obtenerUsuarioPorRol(rol: String): Usuario? =
         db.usuarioDao().obtenerPorRol(rol)
 
+    override fun observarUsuariosPorRol(rol: String): Flow<List<Usuario>> =
+        db.usuarioDao().observarPorRol(rol)
+
     override fun observarServicios(): Flow<List<Servicio>> =
         db.servicioDao().observarTodos()
 

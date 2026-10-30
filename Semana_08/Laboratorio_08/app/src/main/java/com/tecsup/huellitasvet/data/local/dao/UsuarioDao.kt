@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.tecsup.huellitasvet.data.local.entity.Usuario
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UsuarioDao {
@@ -15,6 +16,12 @@ interface UsuarioDao {
 
     @Query("SELECT * FROM usuarios WHERE rol = :rol LIMIT 1")
     suspend fun obtenerPorRol(rol: String): Usuario?
+
+    @Query("SELECT * FROM usuarios WHERE rol = :rol ORDER BY nombre")
+    fun observarPorRol(rol: String): Flow<List<Usuario>>
+
+    @Insert
+    suspend fun insertar(usuario: Usuario)
 
     @Insert
     suspend fun insertarTodos(lista: List<Usuario>)

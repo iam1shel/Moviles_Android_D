@@ -25,7 +25,8 @@ object DatosIniciales {
         val usuarios = listOf(
             Usuario(id = 1, nombre = "Ana García", correo = "ana@correo.test", clave = "1234", rol = Rol.CLIENTE.name),
             Usuario(id = 2, nombre = "Luis Ramos", correo = "luis@correo.test", clave = "1234", rol = Rol.CLIENTE.name),
-            Usuario(id = 3, nombre = "Dra. Rojas", correo = "vet@huellitas.test", clave = "admin", rol = Rol.ADMIN.name)
+            Usuario(id = 3, nombre = "Dra. Rojas", correo = "vet@huellitas.test", clave = "admin", rol = Rol.ADMIN.name),
+            administrador()
         )
         db.usuarioDao().insertarTodos(usuarios)
 
@@ -54,4 +55,19 @@ object DatosIniciales {
         )
         db.citaDao().insertarTodos(citas)
     }
+
+    suspend fun asegurarAdministrador(db: VetDatabase) {
+        if (db.usuarioDao().obtenerPorRol(Rol.ADMINISTRADOR.name) != null) return
+        db.usuarioDao().insertar(administrador(id = 0))
+    }
+
+    private fun administrador(id: Int = 4) = Usuario(
+        id = id,
+        codigo = "ADM-001",
+        nombre = "Camila",
+        apellidos = "Torres",
+        correo = "admin@huellitas.test",
+        clave = "admin123",
+        rol = Rol.ADMINISTRADOR.name
+    )
 }

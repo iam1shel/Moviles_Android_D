@@ -55,12 +55,19 @@ fun LoginScreen(
     val snack = remember { SnackbarHostState() }
 
     LaunchedEffect(rol) {
-        if (rol == Rol.CLIENTE) {
-            correo = "ana@correo.test"
-            clave = "1234"
-        } else {
-            correo = "vet@huellitas.test"
-            clave = "admin"
+        when (rol) {
+            Rol.CLIENTE -> {
+                correo = "ana@correo.test"
+                clave = "1234"
+            }
+            Rol.ADMIN -> {
+                correo = "vet@huellitas.test"
+                clave = "admin"
+            }
+            Rol.ADMINISTRADOR -> {
+                correo = "admin@huellitas.test"
+                clave = "admin123"
+            }
         }
     }
     LaunchedEffect(error) {
@@ -71,7 +78,7 @@ fun LoginScreen(
     }
     LaunchedEffect(usuario) {
         usuario?.let {
-            val r = if (it.rol == Rol.ADMIN.name) Rol.ADMIN else Rol.CLIENTE
+            val r = Rol.entries.find { rol -> rol.name == it.rol } ?: Rol.CLIENTE
             onIngreso(r)
         }
     }
@@ -102,11 +109,7 @@ fun LoginScreen(
                     fontSize = 14.sp
                 )
                 Spacer(Modifier.height(22.dp))
-                SelectorRol(
-                    dueño = rol == Rol.CLIENTE,
-                    onDueño = { rol = Rol.CLIENTE },
-                    onVet = { rol = Rol.ADMIN }
-                )
+                SelectorRol(rol = rol, onRol = { rol = it })
                 Spacer(Modifier.height(20.dp))
                 VetTextField(correo, { correo = it }, "Correo", icono = Icons.Outlined.Email)
                 Spacer(Modifier.height(8.dp))
@@ -138,7 +141,7 @@ fun LoginScreen(
                             .align(Alignment.CenterHorizontally)
                             .clickable { }
                     )
-                } else {
+                } else if (rol == Rol.ADMIN) {
                     Spacer(Modifier.height(22.dp))
                     Surface(
                         color = if (modoOscuro) MaterialTheme.colorScheme.primaryContainer else Color(0xFFEFF6FF),
@@ -153,7 +156,29 @@ fun LoginScreen(
                                 fontSize = 14.sp
                             )
                             Text(
-                                "Puedes cambiar de perfil desde Ajustes para probar ambos roles.",
+                                "Puedes cambiar de perfil desde Ajustes para probar el dueño y el veterinario.",
+                                fontSize = 13.sp,
+                                color = if (modoOscuro) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
+                                lineHeight = 18.sp
+                            )
+                        }
+                    }
+                } else {
+                    Spacer(Modifier.height(22.dp))
+                    Surface(
+                        color = if (modoOscuro) MaterialTheme.colorScheme.primaryContainer else Color(0xFFFEF3C7),
+                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
+                            Text(
+                                "Cuenta de administrador",
+                                fontWeight = FontWeight.SemiBold,
+                                color = if (modoOscuro) MaterialTheme.colorScheme.onPrimaryContainer else Color(0xFF92400E),
+                                fontSize = 14.sp
+                            )
+                            Text(
+                                "Código ADM-001 · Camila Torres\nCorreo admin@huellitas.test · contraseña admin123",
                                 fontSize = 13.sp,
                                 color = if (modoOscuro) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
                                 lineHeight = 18.sp

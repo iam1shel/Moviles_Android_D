@@ -56,6 +56,23 @@ private val DuenoDark = darkColorScheme(
     error = Color(0xFFF87171)
 )
 
+private val AdminLight = lightColorScheme(
+    primary = AmbarAdmin,
+    onPrimary = Color.White,
+    primaryContainer = AmbarContenedor,
+    onPrimaryContainer = Color(0xFF78350F),
+    secondary = AmbarAdmin,
+    onSecondary = Color.White,
+    secondaryContainer = AmbarContenedor,
+    background = AmbarFondo,
+    onBackground = TextoPrincipal,
+    surface = Color.White,
+    onSurface = TextoPrincipal,
+    surfaceVariant = AmbarContenedor,
+    onSurfaceVariant = TextoSecundario,
+    error = CanceladaColor
+)
+
 private val VetDark = darkColorScheme(
     primary = Color(0xFF60A5FA),
     onPrimary = Color(0xFF1E3A8A),
@@ -70,6 +87,20 @@ private val VetDark = darkColorScheme(
     error = Color(0xFFF87171)
 )
 
+private val AdminDark = darkColorScheme(
+    primary = Color(0xFFFBBF24),
+    onPrimary = Color(0xFF451A03),
+    primaryContainer = Color(0xFF92400E),
+    onPrimaryContainer = Color(0xFFFEF3C7),
+    background = Color(0xFF1C1408),
+    onBackground = Color(0xFFE2E8F0),
+    surface = Color(0xFF271C0E),
+    onSurface = Color(0xFFE2E8F0),
+    surfaceVariant = Color(0xFF3F2E16),
+    onSurfaceVariant = Color(0xFF94A3B8),
+    error = Color(0xFFF87171)
+)
+
 @Composable
 fun VetTheme(
     rol: Rol = Rol.CLIENTE,
@@ -77,6 +108,8 @@ fun VetTheme(
     content: @Composable () -> Unit
 ) {
     val scheme = when {
+        rol == Rol.ADMINISTRADOR && darkTheme -> AdminDark
+        rol == Rol.ADMINISTRADOR -> AdminLight
         rol == Rol.ADMIN && darkTheme -> VetDark
         rol == Rol.ADMIN -> VetLight
         darkTheme -> DuenoDark

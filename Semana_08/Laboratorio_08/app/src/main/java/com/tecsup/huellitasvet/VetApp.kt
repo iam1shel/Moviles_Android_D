@@ -26,6 +26,9 @@ class VetApp : Application() {
         db = VetDatabase.obtener(this)
         repo = VetRepositoryRoom(db)
         prefs = PreferenciasStore(this)
-        scope.launch { DatosIniciales.sembrar(db) }
+        scope.launch {
+            DatosIniciales.sembrar(db)
+            DatosIniciales.asegurarAdministrador(db)
+        }
     }
 }
