@@ -9,5 +9,10 @@ data class Usuario(
     val nombre: String,
     val correo: String,
     val clave: String,
-    val rol: String
-)
+    val rol: String,
+    val codigo: String = "",
+    val apellidos: String = ""
+) {
+    fun nombreCompleto(): String =
+        listOf(nombre, apellidos).filter { it.isNotBlank() }.joinToString(" ")
+}

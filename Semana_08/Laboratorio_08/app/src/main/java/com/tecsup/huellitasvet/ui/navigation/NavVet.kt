@@ -35,6 +35,9 @@ import androidx.navigation.navArgument
 import com.tecsup.huellitasvet.VetApp
 import com.tecsup.huellitasvet.data.local.entity.Usuario
 import com.tecsup.huellitasvet.model.Rol
+import com.tecsup.huellitasvet.ui.administrador.FormularioMascotaAdminScreen
+import com.tecsup.huellitasvet.ui.administrador.MascotasAdminScreen
+import com.tecsup.huellitasvet.ui.administrador.PerfilAdminScreen
 import com.tecsup.huellitasvet.ui.dueno.FichaMascotaScreen
 import com.tecsup.huellitasvet.ui.dueno.FormularioMascotaScreen
 import com.tecsup.huellitasvet.ui.dueno.InicioScreen
@@ -52,6 +55,7 @@ import com.tecsup.huellitasvet.ui.veterinario.FormularioServicioScreen
 import com.tecsup.huellitasvet.ui.veterinario.PacientesScreen
 import com.tecsup.huellitasvet.ui.veterinario.PanelScreen
 import com.tecsup.huellitasvet.ui.veterinario.ServiciosScreen
+import com.tecsup.huellitasvet.viewmodel.AdministracionViewModel
 import com.tecsup.huellitasvet.viewmodel.AgendaViewModel
 import com.tecsup.huellitasvet.viewmodel.AtenderCitaViewModel
 import com.tecsup.huellitasvet.viewmodel.InicioViewModel
@@ -79,13 +83,18 @@ fun NavVet() {
                     vm = sesion,
                     onLogin = { nav.navigate(Rutas.Login) { popUpTo(Rutas.Splash) { inclusive = true } } },
                     onDueno = { nav.navigate(Rutas.Dueno) { popUpTo(Rutas.Splash) { inclusive = true } } },
-                    onVet = { nav.navigate(Rutas.Vet) { popUpTo(Rutas.Splash) { inclusive = true } } }
+                    onVet = { nav.navigate(Rutas.Vet) { popUpTo(Rutas.Splash) { inclusive = true } } },
+                    onAdmin = { nav.navigate(Rutas.Admin) { popUpTo(Rutas.Splash) { inclusive = true } } }
                 )
             }
         }
         composable(Rutas.Login) {
             LoginScreen(vm = sesion, modoOscuro = oscuro) { rol ->
-                val dest = if (rol == Rol.ADMIN) Rutas.Vet else Rutas.Dueno
+                val dest = when (rol) {
+                    Rol.ADMIN -> Rutas.Vet
+                    Rol.ADMINISTRADOR -> Rutas.Admin
+                    Rol.CLIENTE -> Rutas.Dueno
+                }
                 nav.navigate(dest) { popUpTo(Rutas.Login) { inclusive = true } }
             }
         }
@@ -116,6 +125,20 @@ fun NavVet() {
                     onCambiarPerfil = { _ ->
                         nav.navigate(Rutas.Dueno) { popUpTo(0) { inclusive = true } }
                     },
+                    onCerrar = {
+                        sesion.cerrarSesion()
+                        nav.navigate(Rutas.Login) { popUpTo(0) { inclusive = true } }
+                    }
+                )
+            }
+        }
+        composable(Rutas.Admin) {
+            val usuario = sesion.usuarioActual.collectAsState().value
+            if (usuario == null) return@composable
+            VetTheme(rol = Rol.ADMINISTRADOR, darkTheme = oscuro) {
+                GrafoAdministrador(
+                    usuario = usuario,
+                    sesion = sesion,
                     onCerrar = {
                         sesion.cerrarSesion()
                         nav.navigate(Rutas.Login) { popUpTo(0) { inclusive = true } }
@@ -350,6 +373,75 @@ private fun GrafoVeterinario(
                     onPedirCita = {},
                     esVeterinario = true
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun GrafoAdministrador(
+    usuario: Usuario,
+    sesion: SesionViewModel,
+    onCerrar: () -> Unit
+) {
+    val app = LocalContext.current.applicationContext as VetApp
+    val nav = rememberNavController()
+    val tabs = listOf(
+        Destino(Rutas.AdminMascotas, "Mascotas", Icons.Outlined.Pets),
+        Destino(Rutas.AdminPerfil, "Perfil", Icons.Outlined.Person)
+    )
+    val actual = nav.currentBackStackEntryAsState().value?.destination?.route
+    val mostrarBarra = tabs.any { actual == it.ruta }
+    val factory = remember { VetViewModelFactory(app.repo, app.prefs) }
+    val adminVm: AdministracionViewModel = viewModel(key = "admin-mascotas", factory = factory)
+    val duenos by adminVm.duenos.collectAsState()
+
+    Scaffold(
+        bottomBar = {
+            if (mostrarBarra) {
+                NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
+                    tabs.forEach { d ->
+                        NavigationBarItem(
+                            selected = actual == d.ruta,
+                            onClick = {
+                                nav.navigate(d.ruta) {
+                                    popUpTo(nav.graph.findStartDestination().id) { saveState = true }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            },
+                            icon = { Icon(d.icono, contentDescription = d.etiqueta) },
+                            label = { Text(d.etiqueta) },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                indicatorColor = MaterialTheme.colorScheme.primaryContainer
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    ) { padding ->
+        NavHost(nav, startDestination = Rutas.AdminMascotas, modifier = Modifier.padding(padding)) {
+            composable(Rutas.AdminMascotas) {
+                MascotasAdminScreen(
+                    vm = adminVm,
+                    onMascota = { nav.navigate(Rutas.adminFormMascota(it)) },
+                    onAgregar = { nav.navigate(Rutas.adminFormMascota()) }
+                )
+            }
+            composable(Rutas.AdminPerfil) {
+                PerfilAdminScreen(usuario, sesion, onCerrar)
+            }
+            composable(
+                Rutas.AdminFormMascota,
+                arguments = listOf(navArgument("id") { type = NavType.IntType; defaultValue = 0 })
+            ) { entry ->
+                val id = entry.arguments?.getInt("id") ?: 0
+                val f = VetViewModelFactory(app.repo, app.prefs, mascotaId = id)
+                val vm: MascotaViewModel = viewModel(key = "admin-form-$id", factory = f)
+                FormularioMascotaAdminScreen(vm, duenos, id) { nav.popBackStack() }
             }
         }
     }

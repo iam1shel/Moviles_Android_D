@@ -5,13 +5,14 @@
 **Tecnología:** Kotlin + Jetpack Compose + Material 3, Room 2.6.1, DataStore, Navigation Compose  
 **Patrón:** MVVM + Repository (interface)
 
-App de una veterinaria con dos perfiles en el mismo dispositivo. El dueño registra mascotas, pide citas y ve el historial clínico. El veterinario ve la agenda, confirma, atiende y administra servicios. Ambos comparten la misma base Room (`huellitasvet.db`). Datos ficticios (Ley 29733).
+App de una veterinaria con tres perfiles en el mismo dispositivo. El dueño registra mascotas, pide citas y ve el historial clínico. El veterinario ve la agenda, confirma, atiende y administra servicios. El administrador registra mascotas y elige la raza de una lista. Los tres comparten la misma base Room (`huellitasvet.db`). Datos ficticios (Ley 29733).
 
 Cuentas de prueba:
 
 - Dueña: `ana@correo.test` / `1234`
 - Dueño: `luis@correo.test` / `1234`
 - Veterinaria: `vet@huellitas.test` / `admin`
+- Administradora: `admin@huellitas.test` / `admin123` (código `ADM-001`, Camila Torres)
 
 Android Studio → File → Open → `Semana_08/Laboratorio_08`.
 
@@ -30,14 +31,15 @@ com.tecsup.huellitasvet
 │   │   └── DatosIniciales.kt
 │   ├── repository          VetRepository, VetRepositoryRoom
 │   └── prefs               PreferenciasStore
-├── model                   Rol, EstadoCita, Especie, Sexo, Horarios, ConteoServicio, UltimaVisita
+├── model                   Rol, Razas, EstadoCita, Especie, Sexo, Horarios, ConteoServicio, UltimaVisita
 ├── viewmodel
 └── ui
     ├── theme
     ├── components          (+ graficos/)
     ├── navigation          Rutas, NavVet
     ├── dueno
-    └── veterinario
+    ├── veterinario
+    └── administrador
 ```
 
 ## Diagrama MVVM

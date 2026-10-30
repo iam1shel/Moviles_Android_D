@@ -17,8 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.tecsup.huellitasvet.model.Rol
 
 @Composable
 fun ChipPildora(
@@ -43,17 +45,17 @@ fun ChipPildora(
 
 @Composable
 fun SelectorRol(
-    dueño: Boolean,
-    onDueño: () -> Unit,
-    onVet: () -> Unit,
+    rol: Rol,
+    onRol: (Rol) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        RolOpcion("Dueño", dueño, onDueño, Modifier.weight(1f))
-        RolOpcion("Veterinario", !dueño, onVet, Modifier.weight(1f))
+        RolOpcion("Dueño", rol == Rol.CLIENTE, { onRol(Rol.CLIENTE) }, Modifier.weight(1f))
+        RolOpcion("Veterinario", rol == Rol.ADMIN, { onRol(Rol.ADMIN) }, Modifier.weight(1.35f))
+        RolOpcion("Admin", rol == Rol.ADMINISTRADOR, { onRol(Rol.ADMINISTRADOR) }, Modifier.weight(1f))
     }
 }
 
@@ -76,7 +78,10 @@ private fun RolOpcion(
             texto,
             color = if (seleccionado) MaterialTheme.colorScheme.onPrimary else Color(0xFF94A3B8),
             fontWeight = FontWeight.SemiBold,
-            fontSize = 14.sp
+            fontSize = 13.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(horizontal = 6.dp)
         )
     }
 }

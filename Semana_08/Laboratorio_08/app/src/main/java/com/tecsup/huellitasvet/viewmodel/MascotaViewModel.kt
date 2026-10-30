@@ -7,6 +7,7 @@ import com.tecsup.huellitasvet.data.local.relation.CitaConDetalle
 import com.tecsup.huellitasvet.data.repository.VetRepository
 import com.tecsup.huellitasvet.model.Especie
 import com.tecsup.huellitasvet.model.PuntoPeso
+import com.tecsup.huellitasvet.model.Razas
 import com.tecsup.huellitasvet.model.Sexo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -39,12 +40,14 @@ class MascotaViewModel(
     val errorAnio: StateFlow<String?> = _errorAnio
     private val _errorPeso = MutableStateFlow<String?>(null)
     val errorPeso: StateFlow<String?> = _errorPeso
+    private val _errorRaza = MutableStateFlow<String?>(null)
+    val errorRaza: StateFlow<String?> = _errorRaza
     private val _mensaje = MutableStateFlow<String?>(null)
     val mensaje: StateFlow<String?> = _mensaje
     private val _guardado = MutableStateFlow(false)
     val guardado: StateFlow<Boolean> = _guardado
 
-    fun guardar(mascota: Mascota) {
+    fun guardar(mascota: Mascota, exigirRazaDeCatalogo: Boolean = false) {
         val anioActual = LocalDate.now().year
         var ok = true
         if (mascota.nombre.trim().length < 2) {
@@ -67,6 +70,14 @@ class MascotaViewModel(
             _errorPeso.value = "El peso debe ser mayor que 0"
             ok = false
         } else _errorPeso.value = null
+        val razaDeLista = mascota.raza in Razas.de(mascota.especie)
+        if (exigirRazaDeCatalogo && mascota.raza.isBlank()) {
+            _errorRaza.value = "Elige una raza"
+            ok = false
+        } else if (exigirRazaDeCatalogo && mascota.id == 0 && !razaDeLista) {
+            _errorRaza.value = "Elige una raza de la lista"
+            ok = false
+        } else _errorRaza.value = null
         if (!ok) return
         viewModelScope.launch {
             repo.guardarMascota(mascota)

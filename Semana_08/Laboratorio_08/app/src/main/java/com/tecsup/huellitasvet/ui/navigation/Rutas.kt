@@ -5,6 +5,7 @@ object Rutas {
     const val Login = "login"
     const val Dueno = "dueno"
     const val Vet = "vet"
+    const val Admin = "admin"
 
     const val Inicio = "inicio"
     const val Mascotas = "mascotas"
@@ -23,10 +24,15 @@ object Rutas {
     const val Atender = "atender/{id}"
     const val FichaPaciente = "ficha_paciente/{id}"
 
+    const val AdminMascotas = "admin_mascotas"
+    const val AdminPerfil = "admin_perfil"
+    const val AdminFormMascota = "admin_form_mascota?id={id}"
+
     fun formMascota(id: Int = 0) = "form_mascota?id=$id"
     fun ficha(id: Int) = "ficha/$id"
     fun pedirCita(mascotaId: Int = 0) = "pedir_cita?mascotaId=$mascotaId"
     fun formServicio(id: Int = 0) = "form_servicio?id=$id"
     fun atender(id: Int) = "atender/$id"
     fun fichaPaciente(id: Int) = "ficha_paciente/$id"
+    fun adminFormMascota(id: Int = 0) = "admin_form_mascota?id=$id"
 }
