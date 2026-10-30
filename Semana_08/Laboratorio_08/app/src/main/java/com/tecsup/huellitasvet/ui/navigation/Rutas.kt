@@ -3,6 +3,7 @@ package com.tecsup.huellitasvet.ui.navigation
 object Rutas {
     const val Splash = "splash"
     const val Login = "login"
+    const val Registro = "registro"
     const val Dueno = "dueno"
     const val Vet = "vet"
     const val Admin = "admin"

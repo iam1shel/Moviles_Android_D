@@ -23,6 +23,15 @@ class SesionViewModel(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
 
+    private val _errorNombre = MutableStateFlow<String?>(null)
+    val errorNombre: StateFlow<String?> = _errorNombre
+    private val _errorCorreo = MutableStateFlow<String?>(null)
+    val errorCorreo: StateFlow<String?> = _errorCorreo
+    private val _errorClave = MutableStateFlow<String?>(null)
+    val errorClave: StateFlow<String?> = _errorClave
+    private val _errorConfirmar = MutableStateFlow<String?>(null)
+    val errorConfirmar: StateFlow<String?> = _errorConfirmar
+
     val modoOscuro: StateFlow<Boolean> = prefs.modoOscuro.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), false
     )
@@ -70,6 +79,50 @@ class SesionViewModel(
 
     fun limpiarError() {
         _error.value = null
+    }
+
+    fun registrar(
+        nombre: String,
+        correo: String,
+        clave: String,
+        confirmar: String,
+        onOk: (correo: String, clave: String) -> Unit
+    ) {
+        viewModelScope.launch {
+            val nombreLimpio = nombre.trim()
+            val correoLimpio = correo.trim()
+            var ok = true
+            if (nombreLimpio.length < 2) {
+                _errorNombre.value = "El nombre debe tener al menos 2 caracteres"
+                ok = false
+            } else _errorNombre.value = null
+            val correoValido = correoLimpio.matches(Regex("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"))
+            if (!correoValido) {
+                _errorCorreo.value = "Ingresa un correo válido"
+                ok = false
+            } else if (repo.buscarPorCorreo(correoLimpio) != null) {
+                _errorCorreo.value = "Este correo ya está registrado"
+                ok = false
+            } else _errorCorreo.value = null
+            if (clave.length < 4) {
+                _errorClave.value = "Mínimo 4 caracteres"
+                ok = false
+            } else _errorClave.value = null
+            if (clave != confirmar) {
+                _errorConfirmar.value = "Las contraseñas no coinciden"
+                ok = false
+            } else _errorConfirmar.value = null
+            if (!ok) return@launch
+            repo.registrar(
+                Usuario(
+                    nombre = nombreLimpio,
+                    correo = correoLimpio,
+                    clave = clave,
+                    rol = Rol.CLIENTE.name
+                )
+            )
+            onOk(correoLimpio, clave)
+        }
     }
 
     fun guardarModoOscuro(b: Boolean) {

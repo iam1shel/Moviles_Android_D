@@ -11,6 +11,9 @@ interface UsuarioDao {
     @Query("SELECT * FROM usuarios WHERE correo = :correo AND clave = :clave LIMIT 1")
     suspend fun login(correo: String, clave: String): Usuario?
 
+    @Query("SELECT * FROM usuarios WHERE lower(correo) = lower(:correo) LIMIT 1")
+    suspend fun buscarPorCorreo(correo: String): Usuario?
+
     @Query("SELECT * FROM usuarios WHERE id = :id")
     suspend fun obtener(id: Int): Usuario?
 
@@ -21,7 +24,7 @@ interface UsuarioDao {
     fun observarPorRol(rol: String): Flow<List<Usuario>>
 
     @Insert
-    suspend fun insertar(usuario: Usuario)
+    suspend fun insertar(usuario: Usuario): Long
 
     @Insert
     suspend fun insertarTodos(lista: List<Usuario>)

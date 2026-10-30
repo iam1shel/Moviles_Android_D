@@ -34,6 +34,7 @@ import com.tecsup.huellitasvet.model.Especie
 import com.tecsup.huellitasvet.ui.components.MascotaAvatar
 import com.tecsup.huellitasvet.viewmodel.AdministracionViewModel
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun MascotasAdminScreen(
@@ -76,6 +77,9 @@ fun MascotasAdminScreen(
             items(mascotas, key = { it.mascota.id }) { item ->
                 val m = item.mascota
                 val edad = (anio - m.anioNacimiento).coerceAtLeast(0)
+                val nacimiento = m.fechaNacimiento.takeIf { it.isNotBlank() }?.let { iso ->
+                    runCatching { LocalDate.parse(iso).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) }.getOrNull()
+                }
                 val especieTxt = when (m.especie) {
                     Especie.PERRO.name -> "Perro"
                     Especie.GATO.name -> "Gato"
@@ -94,7 +98,11 @@ fun MascotasAdminScreen(
                             Text(m.nombre, fontWeight = FontWeight.SemiBold)
                             Text("$especieTxt · ${m.raza}", style = MaterialTheme.typography.bodySmall)
                             Text(
-                                "Dueño: ${item.dueno.nombreCompleto()} · $edad años",
+                                listOfNotNull(
+                                    "Dueño: ${item.dueno.nombreCompleto()}",
+                                    nacimiento?.let { "nació el $it" },
+                                    "$edad años"
+                                ).joinToString(" · "),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
