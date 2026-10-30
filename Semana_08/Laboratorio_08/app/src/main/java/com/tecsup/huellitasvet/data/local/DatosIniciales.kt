@@ -31,10 +31,10 @@ object DatosIniciales {
         db.usuarioDao().insertarTodos(usuarios)
 
         val mascotas = listOf(
-            Mascota(id = 1, duenoId = 1, nombre = "Luna", especie = Especie.GATO.name, raza = "Siamesa", anioNacimiento = 2023, peso = 4.3, sexo = Sexo.HEMBRA.name),
-            Mascota(id = 2, duenoId = 1, nombre = "Max", especie = Especie.PERRO.name, raza = "Labrador", anioNacimiento = 2022, peso = 24.5, sexo = Sexo.MACHO.name),
-            Mascota(id = 3, duenoId = 2, nombre = "Rocky", especie = Especie.PERRO.name, raza = "Bulldog", anioNacimiento = 2018, peso = 18.0, sexo = Sexo.MACHO.name),
-            Mascota(id = 4, duenoId = 2, nombre = "Michi", especie = Especie.GATO.name, raza = "Mestizo", anioNacimiento = 2024, peso = 3.8, sexo = Sexo.HEMBRA.name)
+            Mascota(id = 1, duenoId = 1, nombre = "Luna", especie = Especie.GATO.name, raza = "Siamesa", anioNacimiento = 2023, fechaNacimiento = "2023-05-14", peso = 4.3, sexo = Sexo.HEMBRA.name),
+            Mascota(id = 2, duenoId = 1, nombre = "Max", especie = Especie.PERRO.name, raza = "Labrador", anioNacimiento = 2022, fechaNacimiento = "2022-11-03", peso = 24.5, sexo = Sexo.MACHO.name),
+            Mascota(id = 3, duenoId = 2, nombre = "Rocky", especie = Especie.PERRO.name, raza = "Bulldog", anioNacimiento = 2018, fechaNacimiento = "2018-02-20", peso = 18.0, sexo = Sexo.MACHO.name),
+            Mascota(id = 4, duenoId = 2, nombre = "Michi", especie = Especie.GATO.name, raza = "Mestizo", anioNacimiento = 2024, fechaNacimiento = "2024-08-09", peso = 3.8, sexo = Sexo.HEMBRA.name)
         )
         db.mascotaDao().insertarTodos(mascotas)
 

@@ -47,6 +47,7 @@ import com.tecsup.huellitasvet.ui.dueno.MascotasScreen
 import com.tecsup.huellitasvet.ui.dueno.MisCitasScreen
 import com.tecsup.huellitasvet.ui.dueno.PedirCitaScreen
 import com.tecsup.huellitasvet.ui.dueno.PerfilScreen
+import com.tecsup.huellitasvet.ui.dueno.RegistroScreen
 import com.tecsup.huellitasvet.ui.dueno.SplashScreen
 import com.tecsup.huellitasvet.ui.theme.VetTheme
 import com.tecsup.huellitasvet.ui.veterinario.AgendaScreen
@@ -101,15 +102,36 @@ fun NavVet() {
                 )
             }
         }
-        composable(Rutas.Login) {
-            LoginScreen(vm = sesion, modoOscuro = oscuro) { rol ->
-                val dest = when (rol) {
-                    Rol.ADMIN -> Rutas.Vet
-                    Rol.ADMINISTRADOR -> Rutas.Admin
-                    Rol.CLIENTE -> Rutas.Dueno
+        composable(Rutas.Login) { entry ->
+            val correoRegistrado = entry.savedStateHandle.get<String>("correoRegistrado")
+            val claveRegistrada = entry.savedStateHandle.get<String>("claveRegistrada")
+            LoginScreen(
+                vm = sesion,
+                modoOscuro = oscuro,
+                correoInicial = correoRegistrado,
+                claveInicial = claveRegistrada,
+                onRegistrar = { nav.navigate(Rutas.Registro) },
+                onIngreso = { rol ->
+                    val dest = when (rol) {
+                        Rol.ADMIN -> Rutas.Vet
+                        Rol.ADMINISTRADOR -> Rutas.Admin
+                        Rol.CLIENTE -> Rutas.Dueno
+                    }
+                    nav.navigate(dest) { popUpTo(Rutas.Login) { inclusive = true } }
                 }
-                nav.navigate(dest) { popUpTo(Rutas.Login) { inclusive = true } }
-            }
+            )
+        }
+        composable(Rutas.Registro) {
+            RegistroScreen(
+                vm = sesion,
+                modoOscuro = oscuro,
+                onBack = { nav.popBackStack() },
+                onCreada = { correo, clave ->
+                    nav.previousBackStackEntry?.savedStateHandle?.set("correoRegistrado", correo)
+                    nav.previousBackStackEntry?.savedStateHandle?.set("claveRegistrada", clave)
+                    nav.popBackStack()
+                }
+            )
         }
         composable(Rutas.Dueno) {
             val usuario = sesion.usuarioActual.collectAsState().value

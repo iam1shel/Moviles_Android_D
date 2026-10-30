@@ -45,15 +45,32 @@ import com.tecsup.huellitasvet.viewmodel.SesionViewModel
 fun LoginScreen(
     vm: SesionViewModel,
     modoOscuro: Boolean,
+    correoInicial: String? = null,
+    claveInicial: String? = null,
+    onRegistrar: () -> Unit,
     onIngreso: (Rol) -> Unit
 ) {
     var rol by remember { mutableStateOf(Rol.CLIENTE) }
-    var correo by remember { mutableStateOf("ana@correo.test") }
-    var clave by remember { mutableStateOf("1234") }
+    var correo by remember { mutableStateOf(correoInicial ?: "ana@correo.test") }
+    var clave by remember { mutableStateOf(claveInicial ?: "1234") }
+    var conservarDatos by remember { mutableStateOf(!correoInicial.isNullOrBlank()) }
     val error by vm.error.collectAsState()
     val snack = remember { SnackbarHostState() }
 
+    LaunchedEffect(correoInicial, claveInicial) {
+        if (!correoInicial.isNullOrBlank()) {
+            rol = Rol.CLIENTE
+            correo = correoInicial
+            clave = claveInicial.orEmpty()
+            conservarDatos = true
+            snack.showSnackbar("Cuenta creada. Ingresa con estos datos.")
+        }
+    }
     LaunchedEffect(rol) {
+        if (conservarDatos && rol == Rol.CLIENTE) {
+            conservarDatos = false
+            return@LaunchedEffect
+        }
         when (rol) {
             Rol.CLIENTE -> {
                 correo = "ana@correo.test"
@@ -132,7 +149,7 @@ fun LoginScreen(
                         fontSize = 13.sp,
                         modifier = Modifier
                             .align(Alignment.CenterHorizontally)
-                            .clickable { }
+                            .clickable(onClick = onRegistrar)
                     )
                 } else if (rol == Rol.ADMIN) {
                     Spacer(Modifier.height(22.dp))

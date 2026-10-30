@@ -38,10 +38,12 @@ import com.tecsup.huellitasvet.model.Sexo
 import com.tecsup.huellitasvet.ui.components.AppTopBar
 import com.tecsup.huellitasvet.ui.components.ChipPildora
 import com.tecsup.huellitasvet.ui.components.MascotaAvatar
+import com.tecsup.huellitasvet.ui.components.SelectorFecha
 import com.tecsup.huellitasvet.ui.components.SelectorLista
 import com.tecsup.huellitasvet.ui.components.VetButton
 import com.tecsup.huellitasvet.ui.components.VetTextField
 import com.tecsup.huellitasvet.viewmodel.MascotaViewModel
+import java.time.LocalDate
 
 @Composable
 fun FormularioMascotaAdminScreen(
@@ -63,7 +65,8 @@ fun FormularioMascotaAdminScreen(
 
     var nombre by remember { mutableStateOf("") }
     var raza by remember { mutableStateOf("") }
-    var anio by remember { mutableStateOf("") }
+    var fechaNacimiento by remember { mutableStateOf<LocalDate?>(null) }
+    var errorFecha by remember { mutableStateOf<String?>(null) }
     var peso by remember { mutableStateOf("") }
     var especie by remember { mutableStateOf(Especie.PERRO.name) }
     var sexo by remember { mutableStateOf(Sexo.MACHO.name) }
@@ -82,7 +85,10 @@ fun FormularioMascotaAdminScreen(
         if (mascotaId != 0 && m != null && !cargado) {
             nombre = m.nombre
             raza = m.raza
-            anio = m.anioNacimiento.toString()
+            fechaNacimiento = m.fechaNacimiento.takeIf { it.isNotBlank() }
+                ?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
+                ?: m.anioNacimiento.takeIf { it in 1990..LocalDate.now().year }
+                    ?.let { LocalDate.of(it, 1, 1) }
             peso = m.peso.toString()
             especie = m.especie
             sexo = m.sexo
@@ -144,20 +150,21 @@ fun FormularioMascotaAdminScreen(
                 placeholder = "Elige la raza"
             )
             Spacer(Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                VetTextField(
-                    anio, { anio = it }, "Año de nacimiento",
-                    modifier = Modifier.weight(1f),
-                    error = errorAnio,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                )
-                VetTextField(
-                    peso, { peso = it }, "Peso (kg)",
-                    modifier = Modifier.weight(1f),
-                    error = errorPeso,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                )
-            }
+            SelectorFecha(
+                etiqueta = "Fecha de nacimiento",
+                fecha = fechaNacimiento,
+                onFecha = {
+                    fechaNacimiento = it
+                    errorFecha = null
+                },
+                error = errorFecha ?: errorAnio
+            )
+            Spacer(Modifier.height(8.dp))
+            VetTextField(
+                peso, { peso = it }, "Peso (kg)",
+                error = errorPeso,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+            )
             Spacer(Modifier.height(8.dp))
             Text("Sexo", style = MaterialTheme.typography.titleSmall, modifier = Modifier.align(Alignment.Start))
             Spacer(Modifier.height(8.dp))
@@ -174,7 +181,13 @@ fun FormularioMascotaAdminScreen(
                     errorDueno = "Elige el dueño de la mascota"
                     return@VetButton
                 }
+                val nacimiento = fechaNacimiento
+                if (nacimiento == null || nacimiento.isAfter(LocalDate.now())) {
+                    errorFecha = "Elige la fecha de nacimiento"
+                    return@VetButton
+                }
                 errorDueno = null
+                errorFecha = null
                 vm.guardar(
                     Mascota(
                         id = mascotaId,
@@ -182,7 +195,8 @@ fun FormularioMascotaAdminScreen(
                         nombre = nombre,
                         especie = especie,
                         raza = raza,
-                        anioNacimiento = anio.toIntOrNull() ?: 0,
+                        anioNacimiento = nacimiento.year,
+                        fechaNacimiento = nacimiento.toString(),
                         peso = peso.replace(",", ".").toDoubleOrNull() ?: 0.0,
                         sexo = sexo
                     ),

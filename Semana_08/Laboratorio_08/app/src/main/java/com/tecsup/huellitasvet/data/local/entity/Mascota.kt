@@ -23,6 +23,7 @@ data class Mascota(
     val especie: String,
     val raza: String,
     val anioNacimiento: Int,
+    val fechaNacimiento: String = "",
     val peso: Double,
     val sexo: String
 )
