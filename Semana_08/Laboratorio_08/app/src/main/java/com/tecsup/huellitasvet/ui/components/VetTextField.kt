@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -43,8 +44,8 @@ fun VetTextField(
         colors = OutlinedTextFieldDefaults.colors(
             unfocusedBorderColor = Color(0xFFE2E8F0),
             focusedBorderColor = Color(0xFFCBD5E1),
-            unfocusedContainerColor = Color.White,
-            focusedContainerColor = Color.White,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
             unfocusedLabelColor = Color(0xFF94A3B8),
             focusedLabelColor = Color(0xFF94A3B8),
             errorBorderColor = Color(0xFFDC2626)

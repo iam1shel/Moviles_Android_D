@@ -79,7 +79,7 @@ fun LoginScreen(
     VetTheme(rol = rol, darkTheme = modoOscuro) {
         Scaffold(
             snackbarHost = { SnackbarHost(snack) },
-            containerColor = if (modoOscuro) MaterialTheme.colorScheme.background else Color.White
+            containerColor = if (modoOscuro) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.surface
         ) { padding ->
             Column(
                 modifier = Modifier
@@ -93,7 +93,7 @@ fun LoginScreen(
                     "Bienvenido",
                     fontWeight = FontWeight.Bold,
                     fontSize = 30.sp,
-                    color = Color(0xFF0F172A),
+                    color = MaterialTheme.colorScheme.onBackground,
                     letterSpacing = (-0.4).sp
                 )
                 Text(
@@ -141,16 +141,21 @@ fun LoginScreen(
                 } else {
                     Spacer(Modifier.height(22.dp))
                     Surface(
-                        color = Color(0xFFEFF6FF),
+                        color = if (modoOscuro) MaterialTheme.colorScheme.primaryContainer else Color(0xFFEFF6FF),
                         shape = RoundedCornerShape(16.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
-                            Text("Modo práctica", fontWeight = FontWeight.SemiBold, color = AzulVet, fontSize = 14.sp)
+                            Text(
+                                "Modo práctica",
+                                fontWeight = FontWeight.SemiBold,
+                                color = if (modoOscuro) MaterialTheme.colorScheme.onPrimaryContainer else AzulVet,
+                                fontSize = 14.sp
+                            )
                             Text(
                                 "Puedes cambiar de perfil desde Ajustes para probar ambos roles.",
                                 fontSize = 13.sp,
-                                color = Color(0xFF64748B),
+                                color = if (modoOscuro) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
                                 lineHeight = 18.sp
                             )
                         }

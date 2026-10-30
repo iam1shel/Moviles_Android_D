@@ -28,11 +28,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.tecsup.huellitasvet.model.DatoGrafico
+import com.tecsup.huellitasvet.model.EstadoCita
 import com.tecsup.huellitasvet.ui.components.graficos.GraficoBarras
 import com.tecsup.huellitasvet.ui.components.graficos.GraficoDona
 import com.tecsup.huellitasvet.ui.theme.AtendidaColor
+import com.tecsup.huellitasvet.ui.theme.AzulVet
+import com.tecsup.huellitasvet.ui.theme.CanceladaColor
 import com.tecsup.huellitasvet.ui.theme.ConfirmadaColor
 import com.tecsup.huellitasvet.ui.theme.PendienteColor
+import com.tecsup.huellitasvet.ui.theme.TextoPrincipal
 import com.tecsup.huellitasvet.viewmodel.PanelViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -44,8 +49,15 @@ fun PanelScreen(vm: PanelViewModel, onVerAgenda: () -> Unit) {
     val pendientes by vm.pendientes.collectAsState()
     val atendidas by vm.atendidas.collectAsState()
     val ingresos by vm.ingresosMes.collectAsState()
-    val porEstado by vm.porEstado.collectAsState()
-    val porServicio by vm.porServicio.collectAsState()
+    val conteoEstados by vm.porEstado.collectAsState()
+    val conteoServicios by vm.porServicio.collectAsState()
+    val porEstado = conteoEstados.map { (estado, cantidad) ->
+        DatoGrafico(estado.etiqueta(), cantidad.toFloat(), estado.color())
+    }
+    val coloresServicio = listOf(AzulVet, PendienteColor, ConfirmadaColor, AtendidaColor)
+    val porServicio = conteoServicios.mapIndexed { i, item ->
+        DatoGrafico(item.nombre, item.cantidad.toFloat(), coloresServicio[i % coloresServicio.size])
+    }
     val fechaTxt = LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE d MMM", Locale("es")))
 
     Column(
@@ -92,7 +104,7 @@ fun PanelScreen(vm: PanelViewModel, onVerAgenda: () -> Unit) {
         if (pendientes > 0) {
             Spacer(Modifier.height(16.dp))
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF7ED)),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF7ED), contentColor = TextoPrincipal),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -102,6 +114,20 @@ fun PanelScreen(vm: PanelViewModel, onVerAgenda: () -> Unit) {
             }
         }
     }
+}
+
+private fun EstadoCita.etiqueta(): String = when (this) {
+    EstadoCita.PENDIENTE -> "Pendiente"
+    EstadoCita.CONFIRMADA -> "Confirmada"
+    EstadoCita.ATENDIDA -> "Atendida"
+    EstadoCita.CANCELADA -> "Cancelada"
+}
+
+private fun EstadoCita.color(): Color = when (this) {
+    EstadoCita.PENDIENTE -> PendienteColor
+    EstadoCita.CONFIRMADA -> ConfirmadaColor
+    EstadoCita.ATENDIDA -> AtendidaColor
+    EstadoCita.CANCELADA -> CanceladaColor
 }
 
 @Composable

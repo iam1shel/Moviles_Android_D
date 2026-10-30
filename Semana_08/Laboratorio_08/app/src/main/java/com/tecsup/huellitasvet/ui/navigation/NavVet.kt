@@ -21,7 +21,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -153,7 +152,7 @@ private fun GrafoDueno(
     Scaffold(
         bottomBar = {
             if (mostrarBarra) {
-                NavigationBar(containerColor = Color.White) {
+                NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
                     tabs.forEach { d ->
                         NavigationBarItem(
                             selected = actual == d.ruta,
@@ -267,11 +266,12 @@ private fun GrafoVeterinario(
     val actual = nav.currentBackStackEntryAsState().value?.destination?.route
     val mostrarBarra = tabs.any { actual == it.ruta }
     val factory = remember { VetViewModelFactory(app.repo, app.prefs) }
+    val serviciosVm: ServiciosViewModel = viewModel(key = "servicios", factory = factory)
 
     Scaffold(
         bottomBar = {
             if (mostrarBarra) {
-                NavigationBar(containerColor = Color.White) {
+                NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
                     tabs.forEach { d ->
                         NavigationBarItem(
                             selected = actual == d.ruta,
@@ -315,8 +315,7 @@ private fun GrafoVeterinario(
                 PacientesScreen(vm) { nav.navigate(Rutas.fichaPaciente(it)) }
             }
             composable(Rutas.Servicios) {
-                val vm: ServiciosViewModel = viewModel(factory = factory)
-                ServiciosScreen(vm) { nav.navigate(Rutas.formServicio(it)) }
+                ServiciosScreen(serviciosVm) { nav.navigate(Rutas.formServicio(it)) }
             }
             composable(Rutas.Ajustes) {
                 AjustesScreen(usuario, sesion, onCambiarPerfil, onCerrar)
@@ -326,8 +325,7 @@ private fun GrafoVeterinario(
                 arguments = listOf(navArgument("id") { type = NavType.IntType; defaultValue = 0 })
             ) { entry ->
                 val id = entry.arguments?.getInt("id") ?: 0
-                val vm: ServiciosViewModel = viewModel(factory = factory)
-                FormularioServicioScreen(vm, id) { nav.popBackStack() }
+                FormularioServicioScreen(serviciosVm, id) { nav.popBackStack() }
             }
             composable(
                 Rutas.Atender,

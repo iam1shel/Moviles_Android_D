@@ -13,6 +13,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.tecsup.huellitasvet.data.local.entity.Servicio
 import com.tecsup.huellitasvet.ui.components.AppTopBar
 import com.tecsup.huellitasvet.ui.components.ChipPildora
 import com.tecsup.huellitasvet.ui.components.IconoServicio
@@ -41,6 +42,11 @@ fun FormularioServicioScreen(
     onBack: () -> Unit
 ) {
     val servicios by vm.servicios.collectAsState()
+    val errorNombre by vm.errorNombre.collectAsState()
+    val errorDuracion by vm.errorDuracion.collectAsState()
+    val errorPrecio by vm.errorPrecio.collectAsState()
+    val mensaje by vm.mensaje.collectAsState()
+    val snack = remember { SnackbarHostState() }
     val existente = servicios.find { it.id == servicioId }
     var nombre by remember { mutableStateOf("") }
     var descripcion by remember { mutableStateOf("") }
@@ -48,10 +54,10 @@ fun FormularioServicioScreen(
     var precio by remember { mutableStateOf("") }
     var icono by remember { mutableStateOf("heart") }
     var activo by remember { mutableStateOf(true) }
-    var errorNombre by remember { mutableStateOf<String?>(null) }
-    var errorPrecio by remember { mutableStateOf<String?>(null) }
     var cargado by remember { mutableStateOf(false) }
 
+    LaunchedEffect(servicioId) { vm.limpiarErrores() }
+    LaunchedEffect(mensaje) { mensaje?.let { snack.showSnackbar(it); vm.limpiarMensaje() } }
     LaunchedEffect(existente) {
         val s = existente
         if (servicioId != 0 && s != null && !cargado) {
@@ -65,7 +71,10 @@ fun FormularioServicioScreen(
         }
     }
 
-    Scaffold(topBar = { AppTopBar(if (servicioId == 0) "Nuevo servicio" else "Editar servicio", onBack) }) { padding ->
+    Scaffold(
+        topBar = { AppTopBar(if (servicioId == 0) "Nuevo servicio" else "Editar servicio", onBack) },
+        snackbarHost = { SnackbarHost(snack) }
+    ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -77,9 +86,12 @@ fun FormularioServicioScreen(
             Spacer(Modifier.height(8.dp))
             Text("Duración", style = MaterialTheme.typography.titleSmall)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf(15, 30, 45, 60).forEach { min ->
+                vm.duracionesPermitidas.forEach { min ->
                     ChipPildora("$min min", duracion == min, { duracion = min })
                 }
+            }
+            errorDuracion?.let {
+                Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
             }
             Spacer(Modifier.height(8.dp))
             VetTextField(
@@ -107,23 +119,16 @@ fun FormularioServicioScreen(
             }
             Spacer(Modifier.height(24.dp))
             VetButton("Guardar servicio", onClick = {
-                var ok = true
-                if (nombre.isBlank()) { errorNombre = "El nombre es obligatorio"; ok = false } else errorNombre = null
-                val p = precio.replace(",", ".").toDoubleOrNull() ?: 0.0
-                if (p <= 0) { errorPrecio = "El precio debe ser mayor que 0"; ok = false } else errorPrecio = null
-                if (!ok) return@VetButton
                 vm.guardar(
-                    Servicio(
-                        id = servicioId,
-                        nombre = nombre.trim(),
-                        descripcion = descripcion.trim(),
-                        duracionMin = duracion,
-                        precio = p,
-                        activo = activo,
-                        icono = icono
-                    )
+                    id = servicioId,
+                    nombre = nombre,
+                    descripcion = descripcion,
+                    duracionMin = duracion,
+                    precioTxt = precio,
+                    activo = activo,
+                    icono = icono,
+                    onOk = onBack
                 )
-                onBack()
             })
             Spacer(Modifier.height(8.dp))
             VetButton("Cancelar", onClick = onBack, outlined = true)
@@ -131,10 +136,7 @@ fun FormularioServicioScreen(
                 Spacer(Modifier.height(8.dp))
                 VetButton(
                     "Eliminar servicio",
-                    onClick = {
-                        vm.eliminar(existente)
-                        onBack()
-                    },
+                    onClick = { vm.eliminar(existente, onOk = onBack) },
                     outlined = true,
                     containerColor = MaterialTheme.colorScheme.error
                 )

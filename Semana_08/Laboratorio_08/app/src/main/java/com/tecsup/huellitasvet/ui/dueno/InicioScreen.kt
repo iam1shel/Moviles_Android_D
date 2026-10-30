@@ -78,7 +78,7 @@ fun InicioScreen(
                 Text("¿Cómo están tus mascotas hoy?", color = Color(0xFF94A3B8), fontSize = 14.sp)
             }
             IconButton(onClick = {}) {
-                Icon(Icons.Outlined.Notifications, contentDescription = null, tint = Color(0xFF64748B))
+                Icon(Icons.Outlined.Notifications, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             UsuarioAvatar(usuario.nombre, tamano = 48.dp)
         }
@@ -88,8 +88,9 @@ fun InicioScreen(
             shape = RoundedCornerShape(24.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
+            val sobrePrimario = MaterialTheme.colorScheme.onPrimary
             if (proxima == null) {
-                Text("Aún no tienes citas", color = Color.White, modifier = Modifier.padding(20.dp))
+                Text("Aún no tienes citas", color = sobrePrimario, modifier = Modifier.padding(20.dp))
             } else {
                 val c = proxima!!
                 val fechaTxt = runCatching {
@@ -97,17 +98,17 @@ fun InicioScreen(
                 }.getOrDefault(c.cita.fecha)
                 Row(Modifier.padding(18.dp), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
-                        Text("Próxima cita", color = Color.White.copy(alpha = 0.85f), fontSize = 12.sp)
+                        Text("Próxima cita", color = sobrePrimario.copy(alpha = 0.85f), fontSize = 12.sp)
                         Text(
                             "${c.mascota.mascota.nombre} · ${c.servicio.nombre}",
-                            color = Color.White,
+                            color = sobrePrimario,
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
                         )
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Outlined.Schedule, null, tint = Color.White, modifier = Modifier.size(14.dp))
+                            Icon(Icons.Outlined.Schedule, null, tint = sobrePrimario, modifier = Modifier.size(14.dp))
                             Spacer(Modifier.width(4.dp))
-                            Text("$fechaTxt · ${c.cita.hora}", color = Color.White, fontSize = 13.sp)
+                            Text("$fechaTxt · ${c.cita.hora}", color = sobrePrimario, fontSize = 13.sp)
                         }
                         Spacer(Modifier.height(8.dp))
                         EstadoCitaChip(c.cita.estado, sobreOscuro = true)
@@ -153,13 +154,13 @@ fun InicioScreen(
                         Modifier
                             .size(72.dp)
                             .clip(RoundedCornerShape(20.dp))
-                            .background(Color.White),
+                            .background(MaterialTheme.colorScheme.surface),
                         contentAlignment = Alignment.Center
                     ) {
                         IconoServicio(s.icono, 28.dp)
                     }
                     Spacer(Modifier.height(8.dp))
-                    Text(s.nombre.substringBefore(" "), fontSize = 13.sp, color = Color(0xFF334155))
+                    Text(s.nombre.substringBefore(" "), fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground)
                 }
             }
         }
@@ -196,7 +197,7 @@ private fun TarjetaMascotaMini(m: Mascota, onClick: () -> Unit) {
     Card(
         modifier = Modifier.clickable(onClick = onClick),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(

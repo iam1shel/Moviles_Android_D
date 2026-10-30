@@ -20,7 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.tecsup.huellitasvet.data.local.relation.CitaConDetalle
-import com.tecsup.huellitasvet.model.EstadoCita
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -92,23 +91,5 @@ fun CitaCard(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun puedeCancelar(estado: String, fecha: String, hora: String): Boolean {
-    if (estado != EstadoCita.PENDIENTE.name && estado != EstadoCita.CONFIRMADA.name) return false
-    return faltanMasDeDosHoras(fecha, hora)
-}
-
-fun faltanMasDeDosHoras(fecha: String, hora: String): Boolean {
-    return try {
-        val fechaHora = java.time.LocalDateTime.of(
-            LocalDate.parse(fecha),
-            java.time.LocalTime.parse(hora)
-        )
-        java.time.Duration.between(java.time.LocalDateTime.now(), fechaHora).toHours() > 2
-    } catch (_: Exception) {
-        false
     }
 }

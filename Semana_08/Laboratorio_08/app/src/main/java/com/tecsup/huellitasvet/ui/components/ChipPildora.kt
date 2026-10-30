@@ -28,7 +28,7 @@ fun ChipPildora(
     modifier: Modifier = Modifier
 ) {
     val fondo = if (seleccionado) MaterialTheme.colorScheme.primary else Color(0xFFF1F5F9)
-    val color = if (seleccionado) Color.White else Color(0xFF94A3B8)
+    val color = if (seleccionado) MaterialTheme.colorScheme.onPrimary else Color(0xFF94A3B8)
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(24.dp))
@@ -74,7 +74,7 @@ private fun RolOpcion(
     ) {
         Text(
             texto,
-            color = if (seleccionado) Color.White else Color(0xFF94A3B8),
+            color = if (seleccionado) MaterialTheme.colorScheme.onPrimary else Color(0xFF94A3B8),
             fontWeight = FontWeight.SemiBold,
             fontSize = 14.sp
         )

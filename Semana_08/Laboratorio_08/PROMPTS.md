@@ -60,6 +60,8 @@ Otros. La View solo observa el StateFlow filtrado. No uses DAO ni XML.
 
 ## Reflexion (5 lineas)
 
-- Que mejoro la IA y que no? Armó rápido las firmas de DAO/Repository/ViewModel, pero dejó huecos en validaciones (horario ocupado, lista vacía del gráfico).
-- Que error cometio? En el gráfico no cubrió división por cero ni el alias SQL del peso.
-- Que aprendi sobre MVVM, Room y reglas de negocio? La View no decide reglas; el ViewModel valida; Room persiste. Si agregas una función, va primero en la interface. Las reglas de 2 horas y horario único no pertenecen al DAO.
+1. Qué mejoró la IA: armó rápido las firmas de DAO, Repository y ViewModel para las tres mejoras y respetó la cadena View → ViewModel → interface.
+2. Qué no hizo bien: dejó huecos en validaciones; en reprogramar todas las horas salían libres y no volvía a comprobar el horario antes de guardar.
+3. Qué error cometió: en el gráfico no cubrió la división por cero ni el alias SQL del peso, y la regla de 2 horas usaba `toHours()`, que trunca minutos (2 h 50 min contaba como 2).
+4. Qué corregí manualmente: el alias `pesoRegistrado AS peso`, la lista vacía, la comparación `Duration > Duration.ofHours(2)`, las horas ocupadas/pasadas al reprogramar y sacar la regla de 2 horas de `ui/components` al ViewModel.
+5. Qué aprendí: la View no decide reglas, el ViewModel valida y Room solo persiste; toda función nueva va primero en la interface, y las reglas de 2 horas y horario único no pertenecen al DAO.

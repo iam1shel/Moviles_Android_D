@@ -41,7 +41,7 @@ fun HistorialItem(detalle: CitaConDetalle) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Row(Modifier.padding(16.dp), verticalAlignment = Alignment.Top) {
@@ -61,7 +61,7 @@ fun HistorialItem(detalle: CitaConDetalle) {
                 }
                 cita.diagnostico?.let {
                     Spacer(Modifier.height(2.dp))
-                    Text(it, style = MaterialTheme.typography.bodySmall, color = Color(0xFF64748B))
+                    Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 cita.pesoRegistrado?.let {
                     Spacer(Modifier.height(6.dp))
@@ -73,7 +73,7 @@ fun HistorialItem(detalle: CitaConDetalle) {
                             modifier = Modifier.size(14.dp)
                         )
                         Spacer(Modifier.width(4.dp))
-                        Text("Peso: $it kg", style = MaterialTheme.typography.bodySmall, color = Color(0xFF334155))
+                        Text("Peso: $it kg", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
                     }
                 }
             }

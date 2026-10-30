@@ -43,9 +43,7 @@ import com.tecsup.huellitasvet.ui.components.AppTopBar
 import com.tecsup.huellitasvet.ui.components.CitaCard
 import com.tecsup.huellitasvet.ui.components.FechaChip
 import com.tecsup.huellitasvet.ui.components.HoraChip
-import com.tecsup.huellitasvet.ui.components.puedeCancelar
 import com.tecsup.huellitasvet.viewmodel.MisCitasViewModel
-import java.time.LocalDate
 
 @Composable
 fun MisCitasScreen(
@@ -57,7 +55,7 @@ fun MisCitasScreen(
     val mensaje by vm.mensaje.collectAsState()
     var tab by remember { mutableIntStateOf(0) }
     var porCancelar by remember { mutableStateOf<CitaConDetalle?>(null) }
-    var porReprogramar by remember { mutableStateOf<CitaConDetalle?>(null) }
+    val porReprogramar by vm.porReprogramar.collectAsState()
     val snack = remember { SnackbarHostState() }
     LaunchedEffect(mensaje) { mensaje?.let { snack.showSnackbar(it); vm.limpiarMensaje() } }
 
@@ -81,11 +79,11 @@ fun MisCitasScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(lista, key = { it.cita.id }) { d ->
-                    val puede = puedeCancelar(d.cita.estado, d.cita.fecha, d.cita.hora)
+                    val puede = vm.puedeCancelar(d)
                     CitaCard(
                         detalle = d,
                         onCancelar = if (tab == 0 && puede) ({ porCancelar = d }) else null,
-                        onReprogramar = if (tab == 0 && puede) ({ porReprogramar = d }) else null
+                        onReprogramar = if (tab == 0 && puede) ({ vm.abrirReprogramar(d) }) else null
                     )
                 }
                 if (tab == 0) {
@@ -115,53 +113,57 @@ fun MisCitasScreen(
             dismissButton = { TextButton(onClick = { porCancelar = null }) { Text("No") } }
         )
     }
-    porReprogramar?.let { d ->
-        DialogReprogramar(
-            detalle = d,
-            onCerrar = { porReprogramar = null },
-            onConfirmar = { f, h ->
-                vm.reprogramar(d.cita.id, f, h, d.cita.estado)
-                porReprogramar = null
-            }
-        )
+    if (porReprogramar != null) {
+        DialogReprogramar(vm)
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun DialogReprogramar(
-    detalle: CitaConDetalle,
-    onCerrar: () -> Unit,
-    onConfirmar: (String, String) -> Unit
-) {
-    var fecha by remember { mutableStateOf(detalle.cita.fecha) }
-    var hora by remember { mutableStateOf(detalle.cita.hora) }
-    val fechas = (0L..7L).map { LocalDate.now().plusDays(it) }
+private fun DialogReprogramar(vm: MisCitasViewModel) {
+    val fecha by vm.fechaReprogramar.collectAsState()
+    val hora by vm.horaReprogramar.collectAsState()
+    val ocupadas by vm.horasOcupadasReprogramar.collectAsState()
+    val error by vm.errorReprogramar.collectAsState()
     AlertDialog(
-        onDismissRequest = onCerrar,
+        onDismissRequest = { vm.cerrarReprogramar() },
         title = { Text("Reprogramar cita") },
         text = {
             Column {
                 Text("Elige una nueva fecha y hora libre.")
                 Spacer(Modifier.height(8.dp))
                 FlowRow {
-                    fechas.forEach { d ->
-                        FechaChip(d, seleccionado = fecha == d.toString(), onClick = { fecha = d.toString(); hora = "" })
+                    vm.fechasDisponibles().forEach { d ->
+                        FechaChip(
+                            d,
+                            seleccionado = fecha == d.toString(),
+                            onClick = { vm.seleccionarFechaReprogramar(d.toString()) }
+                        )
                     }
                 }
                 Spacer(Modifier.height(8.dp))
                 FlowRow {
                     Horarios.todos.forEach { h ->
-                        HoraChip(h, seleccionado = hora == h, ocupado = false, deshabilitado = false, onClick = { hora = h })
+                        HoraChip(
+                            hora = h,
+                            seleccionado = hora == h,
+                            ocupado = h in ocupadas,
+                            deshabilitado = vm.horaPasada(h, fecha),
+                            onClick = { vm.seleccionarHoraReprogramar(h) }
+                        )
                     }
+                }
+                error?.let {
+                    Spacer(Modifier.height(8.dp))
+                    Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
                 }
             }
         },
         confirmButton = {
-            TextButton(onClick = { if (hora.isNotBlank()) onConfirmar(fecha, hora) }, enabled = hora.isNotBlank()) {
+            TextButton(onClick = { vm.reprogramar() }, enabled = hora.isNotBlank()) {
                 Text("Guardar")
             }
         },
-        dismissButton = { TextButton(onClick = onCerrar) { Text("Cerrar") } }
+        dismissButton = { TextButton(onClick = { vm.cerrarReprogramar() }) { Text("Cerrar") } }
     )
 }

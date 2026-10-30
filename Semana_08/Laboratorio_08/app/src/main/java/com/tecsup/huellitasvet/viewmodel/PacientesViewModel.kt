@@ -9,7 +9,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import java.time.LocalDate
 
 class PacientesViewModel(repo: VetRepository) : ViewModel() {
     val consulta = MutableStateFlow("")
@@ -29,4 +31,12 @@ class PacientesViewModel(repo: VetRepository) : ViewModel() {
             coincideTexto && coincideEspecie
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val ultimasVisitas: StateFlow<Map<Int, LocalDate>> = repo.observarUltimasVisitas()
+        .map { lista ->
+            lista.mapNotNull { v ->
+                runCatching { LocalDate.parse(v.fecha) }.getOrNull()?.let { v.mascotaId to it }
+            }.toMap()
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyMap())
 }

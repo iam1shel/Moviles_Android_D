@@ -30,7 +30,7 @@ com.tecsup.huellitasvet
 │   │   └── DatosIniciales.kt
 │   ├── repository          VetRepository, VetRepositoryRoom
 │   └── prefs               PreferenciasStore
-├── model                   Rol, EstadoCita, Especie, Sexo, Horarios, ConteoServicio
+├── model                   Rol, EstadoCita, Especie, Sexo, Horarios, ConteoServicio, UltimaVisita
 ├── viewmodel
 └── ui
     ├── theme
@@ -60,14 +60,19 @@ La View no usa DAO ni Repository. El ViewModel solo conoce `VetRepository`. Lect
 
 ## Capturas
 
-Coloca 6 capturas (3 del dueño y 3 del veterinario) en `docs/capturas/` con estos nombres:
+6 capturas (3 del dueño y 3 del veterinario) en `docs/capturas/`.
 
-1. `dueno_login.png`
-2. `dueno_inicio.png`
-3. `dueno_pedir_cita.png`
-4. `vet_panel.png`
-5. `vet_agenda.png`
-6. `vet_servicios.png`
+### Dueño
+
+| Login | Inicio | Pedir cita |
+| --- | --- | --- |
+| ![Login](docs/capturas/dueno_login.png) | ![Inicio](docs/capturas/dueno_inicio.png) | ![Pedir cita](docs/capturas/dueno_pedir_cita.png) |
+
+### Veterinario
+
+| Panel | Agenda | Servicios |
+| --- | --- | --- |
+| ![Panel](docs/capturas/vet_panel.png) | ![Agenda](docs/capturas/vet_agenda.png) | ![Servicios](docs/capturas/vet_servicios.png) |
 
 ## Pruebas de aceptación
 
@@ -81,10 +86,12 @@ Coloca 6 capturas (3 del dueño y 3 del veterinario) en `docs/capturas/` con est
 | Veterinario: agenda | La cita aparece en su hora y puede confirmarla; el dueño la ve CONFIRMADA |
 | Veterinario: atender una cita | Pasa a ATENDIDA, el dueño la ve en el historial y el peso se actualizó |
 | Dueño: cancelar una cita a menos de 2 horas | No se permite cancelar |
+| Dueño: cancelar una cita a más de 2 horas | Se cancela (se compara la duración exacta, no horas truncadas) |
 | Veterinario: ingresos del mes | Coinciden con la suma del precio de las citas atendidas |
 | Veterinario: desactivar un servicio | Ya no se puede elegir al pedir una cita |
 | Veterinario: eliminar un servicio con citas | No se elimina; se muestra un mensaje |
 | Cerrar y abrir la app | Las citas siguen ahí y el perfil y el modo oscuro se recuerdan |
+| Dueño: reprogramar una cita | Los horarios ocupados y pasados aparecen en gris y no se pueden elegir |
 
 ## Para pensar
 

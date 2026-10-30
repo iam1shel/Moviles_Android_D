@@ -8,6 +8,7 @@ import com.tecsup.huellitasvet.data.local.entity.Cita
 import com.tecsup.huellitasvet.data.local.relation.CitaConDetalle
 import com.tecsup.huellitasvet.model.ConteoServicio
 import com.tecsup.huellitasvet.model.PuntoPeso
+import com.tecsup.huellitasvet.model.UltimaVisita
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -130,4 +131,13 @@ interface CitaDao {
         """
     )
     fun observarPesoHistorial(mascotaId: Int): Flow<List<PuntoPeso>>
+
+    @Query(
+        """
+        SELECT mascotaId AS mascotaId, MAX(fecha) AS fecha FROM citas
+        WHERE estado = 'ATENDIDA'
+        GROUP BY mascotaId
+        """
+    )
+    fun observarUltimasVisitas(): Flow<List<UltimaVisita>>
 }

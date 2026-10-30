@@ -8,6 +8,7 @@ import com.tecsup.huellitasvet.data.local.relation.MascotaConDueno
 import com.tecsup.huellitasvet.model.ConteoServicio
 import com.tecsup.huellitasvet.model.EstadoCita
 import com.tecsup.huellitasvet.model.PuntoPeso
+import com.tecsup.huellitasvet.model.UltimaVisita
 import kotlinx.coroutines.flow.Flow
 
 interface VetRepository {
@@ -58,4 +59,5 @@ interface VetRepository {
     suspend fun horarioOcupado(fecha: String, hora: String): Boolean
     suspend fun reprogramarCita(id: Int, fecha: String, hora: String)
     fun observarPesoHistorial(mascotaId: Int): Flow<List<PuntoPeso>>
+    fun observarUltimasVisitas(): Flow<List<UltimaVisita>>
 }

@@ -11,6 +11,7 @@ import com.tecsup.huellitasvet.data.local.relation.MascotaConDueno
 import com.tecsup.huellitasvet.model.ConteoServicio
 import com.tecsup.huellitasvet.model.EstadoCita
 import com.tecsup.huellitasvet.model.PuntoPeso
+import com.tecsup.huellitasvet.model.UltimaVisita
 import kotlinx.coroutines.flow.Flow
 
 class VetRepositoryRoom(private val db: VetDatabase) : VetRepository {
@@ -139,4 +140,7 @@ class VetRepositoryRoom(private val db: VetDatabase) : VetRepository {
 
     override fun observarPesoHistorial(mascotaId: Int): Flow<List<PuntoPeso>> =
         db.citaDao().observarPesoHistorial(mascotaId)
+
+    override fun observarUltimasVisitas(): Flow<List<UltimaVisita>> =
+        db.citaDao().observarUltimasVisitas()
 }

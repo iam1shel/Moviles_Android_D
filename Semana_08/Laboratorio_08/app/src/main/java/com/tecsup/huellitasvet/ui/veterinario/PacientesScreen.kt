@@ -33,13 +33,16 @@ import com.tecsup.huellitasvet.ui.components.ChipPildora
 import com.tecsup.huellitasvet.ui.components.MascotaAvatar
 import com.tecsup.huellitasvet.viewmodel.PacientesViewModel
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun PacientesScreen(vm: PacientesViewModel, onFicha: (Int) -> Unit) {
     val lista by vm.pacientes.collectAsState()
     val consulta by vm.consulta.collectAsState()
     val filtro by vm.especie.collectAsState()
+    val ultimasVisitas by vm.ultimasVisitas.collectAsState()
     val anio = LocalDate.now().year
+    val formato = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
     Column(Modifier.fillMaxSize()) {
         AppTopBar("Pacientes")
@@ -73,6 +76,12 @@ fun PacientesScreen(vm: PacientesViewModel, onFicha: (Int) -> Unit) {
                             Text(m.nombre, fontWeight = FontWeight.SemiBold)
                             Text("${m.raza} · $edad años", style = MaterialTheme.typography.bodySmall)
                             Text("Dueño: ${item.dueno.nombre}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(
+                                ultimasVisitas[m.id]?.let { "Última visita: ${it.format(formato)}" }
+                                    ?: "Sin visitas registradas",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
                         }
                         Text(">", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }

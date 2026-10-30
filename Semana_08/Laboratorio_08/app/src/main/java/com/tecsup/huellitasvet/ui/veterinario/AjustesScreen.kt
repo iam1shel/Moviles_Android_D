@@ -57,7 +57,7 @@ fun AjustesScreen(
         UsuarioAvatar(usuario.nombre, tamano = 88.dp)
         Spacer(Modifier.height(10.dp))
         Text(usuario.nombre, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-        Text(usuario.correo, color = Color(0xFF64748B), fontSize = 13.sp)
+        Text(usuario.correo, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 13.sp)
         Text("Perfil activo", color = MaterialTheme.colorScheme.primary, fontSize = 12.sp, fontWeight = FontWeight.Medium)
         Spacer(Modifier.height(16.dp))
         Card(
@@ -65,14 +65,15 @@ fun AjustesScreen(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
             shape = RoundedCornerShape(18.dp)
         ) {
+            val sobrePrimario = MaterialTheme.colorScheme.onPrimary
             Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Outlined.SwapHoriz, null, tint = Color.White)
+                Icon(Icons.Outlined.SwapHoriz, null, tint = sobrePrimario)
                 Spacer(Modifier.width(10.dp))
                 Column(Modifier.weight(1f)) {
-                    Text("Cambiar de perfil", color = Color.White, fontWeight = FontWeight.SemiBold)
-                    Text("Modo práctica: ir a vista Dueño", color = Color.White.copy(alpha = 0.85f), fontSize = 12.sp)
+                    Text("Cambiar de perfil", color = sobrePrimario, fontWeight = FontWeight.SemiBold)
+                    Text("Modo práctica: ir a vista Dueño", color = sobrePrimario.copy(alpha = 0.85f), fontSize = 12.sp)
                 }
-                Icon(Icons.AutoMirrored.Outlined.ArrowForward, null, tint = Color.White)
+                Icon(Icons.AutoMirrored.Outlined.ArrowForward, null, tint = sobrePrimario)
             }
         }
         Spacer(Modifier.height(20.dp))
