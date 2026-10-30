@@ -2,6 +2,7 @@ package com.tecsup.huellitasvet.data.repository
 
 import androidx.room.withTransaction
 import com.tecsup.huellitasvet.data.local.VetDatabase
+import com.tecsup.huellitasvet.data.local.entity.Administrador
 import com.tecsup.huellitasvet.data.local.entity.Cita
 import com.tecsup.huellitasvet.data.local.entity.Mascota
 import com.tecsup.huellitasvet.data.local.entity.Servicio
@@ -29,6 +30,15 @@ class VetRepositoryRoom(private val db: VetDatabase) : VetRepository {
 
     override suspend fun obtenerUsuario(id: Int): Usuario? =
         db.usuarioDao().obtener(id)
+
+    override suspend fun loginAdministrador(correo: String, clave: String): Administrador? =
+        db.administradorDao().login(correo, clave)
+
+    override suspend fun buscarAdministradorPorCorreo(correo: String): Administrador? =
+        db.administradorDao().buscarPorCorreo(correo)
+
+    override suspend fun obtenerAdministrador(id: Int): Administrador? =
+        db.administradorDao().obtener(id)
 
     override suspend fun obtenerUsuarioPorRol(rol: String): Usuario? =
         db.usuarioDao().obtenerPorRol(rol)

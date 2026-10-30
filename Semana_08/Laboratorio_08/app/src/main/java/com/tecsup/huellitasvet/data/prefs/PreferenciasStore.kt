@@ -21,6 +21,9 @@ class PreferenciasStore(private val context: Context) {
 
     val perfilActivo: Flow<String> = context.dataStore.data.map { it[perfilActivoKey] ?: "" }
     val usuarioId: Flow<Int> = context.dataStore.data.map { it[usuarioIdKey] ?: 0 }
+    val sesionGuardada: Flow<Pair<String, Int>> = context.dataStore.data.map {
+        (it[perfilActivoKey] ?: "") to (it[usuarioIdKey] ?: 0)
+    }
     val modoOscuro: Flow<Boolean> = context.dataStore.data.map { it[modoOscuroKey] ?: false }
     val notificaciones: Flow<Boolean> = context.dataStore.data.map { it[notificacionesKey] ?: true }
     val aceptarCitas: Flow<Boolean> = context.dataStore.data.map { it[aceptarCitasKey] ?: true }
