@@ -1,55 +1,31 @@
-<p align="center">
-  <img src="https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white" alt="Kotlin" />
-  <img src="https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android" />
-  <img src="https://img.shields.io/badge/Jetpack_Compose-4285F4?style=for-the-badge&logo=jetpackcompose&logoColor=white" alt="Compose" />
-</p>
+# Mapa de las 16 semanas
 
-<h1 align="center">Luz Mishel Rojas Tuesta</h1>
-<p align="center">
-  TECSUP · Diseño y Desarrollo de Software<br>
-  Curso de <strong>Juan León Suiyon</strong>
-</p>
+Repositorio de laboratorios de Programacion en Moviles - Tecsup 2026-II.
 
-<p align="center"><em>16 semanas de labs en Android. Si te sirve para entender algo, ya valió la pena.</em></p>
+El codigo se organiza en las ramas `sin-ia` y `con-ia`.
+La rama `main` se mantiene como rama principal.
 
-<p align="center">
-  <a href="https://github.com/iam1shel/Moviles_Android_D/tree/sin-ia">ver labs (sin IA)</a>
-  &nbsp;·&nbsp;
-  <a href="https://github.com/iam1shel/Moviles_Android_D/tree/con-ia">ver labs (con IA)</a>
-</p>
+## Laboratorios
+
+| # | Laboratorio | sin-ia | con-ia |
+|---|---|:---:|:---:|
+| 01 | [Laboratorio 01: Android Studio y GitHub](Semana_01/Laboratorio_01) | Ô£à | Ô£à |
+| 02 | [Laboratorio 02: Carrito de compras](Semana_02/Laboratorio_02) | Ô£à | Ô£à |
+| 03 | [Laboratorio 03: Registro de Producto](Semana_03/Laboratorio_03) | Ô£à | Ô£à |
+| 04 | [Laboratorio 04](Semana_04/Laboratorio_04) | Ô£à | Ô£à |
+| 05 | [Laboratorio 05](Semana_05/Laboratorio_05) | Ô£à | Ô£à |
+| 06 | [Laboratorio 06: TECSUP Store](Semana_06/Laboratorio_06) | Ô£à | Ô£à |
+| 07 | [Laboratorio 07](Semana_07/Laboratorio_07) | Ô£à | Ô£à |
+| 08 | [HuellitasVet](Semana_08/Laboratorio_08) | Ô£à | Ô£à |
+| 09 | [Laboratorio 09](Semana_09/Laboratorio_09) | Ô£à | Ô£à |
+| 10 | [Laboratorio 10](Semana_10/Laboratorio_10) | Ô£à | Ô£à |
+| 11 | [Laboratorio 11](Semana_11/Laboratorio_11) | Ô£à | Ô£à |
+| 12 | [Laboratorio 12](Semana_12/Laboratorio_12) | Ô£à | Ô£à |
+| 13 | [CampusGPS - Localizacion Geografica](Semana_13/Laboratorio_13) | Ô£à | Ô£à |
+| 14 | [CentroTareas - Hilos en Android](Semana_14/Laboratorio_14/CentroTareas) | Ô£à | ÔÇö |
+| 15 | Semana 15 — Pendiente | — | — |
+| 16 | Semana 16 — Pendiente | — | — |
 
 ---
 
-## Mapa de las 16 semanas
-
-Esto es lo que voy a ir llenando. Si entras y `main` se ve vacío, es normal: el código está en las otras ramas.
-
-La **semana 01** la subí solo en `sin-ia`. Desde la **semana 02** uso las dos ramas.
-
-| # | Laboratorio | sin-ia | con-ia |
-| :---: | --- | :---: | :---: |
-| 01 | [Android Studio y GitHub](https://github.com/iam1shel/Moviles_Android_D/tree/sin-ia/Semana_01/Laboratorio_01) | listo | — |
-| 02 | [Carrito y Playa de autos](https://github.com/iam1shel/Moviles_Android_D/tree/sin-ia/Semana_02/Laboratorio_02) | listo | listo |
-| 03 | Semana 03 | en proceso | en proceso |
-| 04 | Semana 04 | — | — |
-| 05 | Semana 05 | — | — |
-| 06 | Semana 06 | — | — |
-| 07 | Semana 07 | — | — |
-| 08 | Semana 08 | — | — |
-| 09 | Semana 09 | — | — |
-| 10 | Semana 10 | — | — |
-| 11 | Semana 11 | — | — |
-| 12 | Semana 12 | — | — |
-| 13 | Semana 13 | — | — |
-| 14 | Semana 14 | — | — |
-| 15 | Semana 15 | — | — |
-| 16 | Semana 16 | — | — |
-
-<details>
-<summary>¿Por qué hay dos ramas?</summary>
-
-<br>
-
-En `sin-ia` subo lo que hago yo. En `con-ia` va lo que hice con IA. Las ramas se dividen desde la semana 02; el Lab 01 está solo en `sin-ia`. `main` es esta portada.
-
-</details>
+Ultima actualizacion: 18 de noviembre de 2026.
