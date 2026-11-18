@@ -9,20 +9,20 @@ La rama `main` se mantiene como rama principal.
 
 | # | Laboratorio | sin-ia | con-ia |
 |---|---|:---:|:---:|
-| 01 | [Laboratorio 01: Android Studio y GitHub](Semana_01/Laboratorio_01) | Ô£à | Ô£à |
-| 02 | [Laboratorio 02: Carrito de compras](Semana_02/Laboratorio_02) | Ô£à | Ô£à |
-| 03 | [Laboratorio 03: Registro de Producto](Semana_03/Laboratorio_03) | Ô£à | Ô£à |
-| 04 | [Laboratorio 04](Semana_04/Laboratorio_04) | Ô£à | Ô£à |
-| 05 | [Laboratorio 05](Semana_05/Laboratorio_05) | Ô£à | Ô£à |
-| 06 | [Laboratorio 06: TECSUP Store](Semana_06/Laboratorio_06) | Ô£à | Ô£à |
-| 07 | [Laboratorio 07](Semana_07/Laboratorio_07) | Ô£à | Ô£à |
-| 08 | [HuellitasVet](Semana_08/Laboratorio_08) | Ô£à | Ô£à |
-| 09 | [Laboratorio 09](Semana_09/Laboratorio_09) | Ô£à | Ô£à |
-| 10 | [Laboratorio 10](Semana_10/Laboratorio_10) | Ô£à | Ô£à |
-| 11 | [Laboratorio 11](Semana_11/Laboratorio_11) | Ô£à | Ô£à |
-| 12 | [Laboratorio 12](Semana_12/Laboratorio_12) | Ô£à | Ô£à |
-| 13 | [CampusGPS - Localizacion Geografica](Semana_13/Laboratorio_13) | Ô£à | Ô£à |
-| 14 | [CentroTareas - Hilos en Android](Semana_14/Laboratorio_14/CentroTareas) | Ô£à | ÔÇö |
+| 01 | [Laboratorio 01: Android Studio y GitHub](Semana_01/Laboratorio_01) | ✅ | ✅ |
+| 02 | [Laboratorio 02: Carrito de compras](Semana_02/Laboratorio_02) | ✅ | ✅ |
+| 03 | [Laboratorio 03: Registro de Producto](Semana_03/Laboratorio_03) | ✅ | ✅ |
+| 04 | [Laboratorio 04](Semana_04/Laboratorio_04) | ✅ | ✅ |
+| 05 | [Laboratorio 05](Semana_05/Laboratorio_05) | ✅ | ✅ |
+| 06 | [Laboratorio 06: TECSUP Store](Semana_06/Laboratorio_06) | ✅ | ✅ |
+| 07 | [Laboratorio 07](Semana_07/Laboratorio_07) | ✅ | ✅ |
+| 08 | [HuellitasVet](Semana_08/Laboratorio_08) | ✅ | ✅ |
+| 09 | [Laboratorio 09](Semana_09/Laboratorio_09) | ✅ | ✅ |
+| 10 | [Laboratorio 10](Semana_10/Laboratorio_10) | ✅ | ✅ |
+| 11 | [Laboratorio 11](Semana_11/Laboratorio_11) | ✅ | ✅ |
+| 12 | [Laboratorio 12](Semana_12/Laboratorio_12) | ✅ | ✅ |
+| 13 | [CampusGPS - Localizacion Geografica](Semana_13/Laboratorio_13) | ✅ | ✅ |
+| 14 | [CentroTareas - Hilos en Android](Semana_14/Laboratorio_14/CentroTareas) | ✅ | — |
 | 15 | Semana 15 — Pendiente | — | — |
 | 16 | Semana 16 — Pendiente | — | — |
 
