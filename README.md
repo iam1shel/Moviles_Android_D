@@ -22,7 +22,7 @@ La rama `main` se mantiene como rama principal.
 | 11 | [Laboratorio 11](https://github.com/iamlshel/Moviles_Android_D/tree/sin-ia/Semana_11/Laboratorio_11) | ✅ | ✅ |
 | 12 | [Laboratorio 12](https://github.com/iamlshel/Moviles_Android_D/tree/sin-ia/Semana_12/Laboratorio_12) | ✅ | ✅ |
 | 13 | [CampusGPS - Localizacion Geografica](https://github.com/iamlshel/Moviles_Android_D/tree/sin-ia/Semana_13/Laboratorio_13) | ✅ | ✅ |
-| 14 | [CentroTareas - Hilos en Android](/tree/sin-ia/Semana_14/Laboratorio_14/CentroTareas) | ✅ | — |
+| 14 | [CentroTareas - Hilos en Android](https://github.com/iam1shel/Moviles_Android_D/tree/sin-ia/Semana_14/Laboratorio_14/CentroTareas) | ✅ | — |
 | 15 | Semana 15 — Pendiente | — | — |
 | 16 | Semana 16 — Pendiente | — | — |
 
