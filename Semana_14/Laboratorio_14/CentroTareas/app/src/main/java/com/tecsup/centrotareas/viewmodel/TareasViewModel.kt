@@ -21,6 +21,14 @@ class TareasViewModel(
     private val _corriendo = MutableStateFlow(false)
     val corriendo: StateFlow<Boolean> = _corriendo.asStateFlow()
 
+    fun tareaLargaMala() {
+        _corriendo.value = true
+        _mensaje.value = "Trabajando (Malo)..."
+        Thread.sleep(4000)
+        _mensaje.value = "Terminó (Malo)"
+        _corriendo.value = false
+    }
+
     fun tareaLarga() {
     }
 
