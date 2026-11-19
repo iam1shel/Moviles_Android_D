@@ -322,7 +322,36 @@ fun PantallaTareas(vm: TareasViewModel) {
                         }
 
                         is CargaUi.Error -> {
-                            // Errores se agregan en el commit 8
+
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.errorContainer
+                                    )
+                                ) {
+                                    Text(
+                                        text = estado.mensaje,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(12.dp),
+                                        color = MaterialTheme.colorScheme.onErrorContainer
+                                    )
+                                }
+
+                                OutlinedButton(
+                                    onClick = {
+                                        vm.cargarALaVez()
+                                    }
+                                ) {
+                                    Text("Reintentar")
+                                }
+                            }
                         }
                     }
                 }

@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
+import java.io.IOException
 
 class TareasRepositoryLocal : TareasRepository {
 
@@ -17,6 +18,10 @@ class TareasRepositoryLocal : TareasRepository {
     ): List<String> {
 
         delay(3000)
+
+        if (simularError) {
+            throw IOException("Sin conexión")
+        }
 
         return listOf(
             "Pedido 101",
