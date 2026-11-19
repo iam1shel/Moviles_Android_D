@@ -1,0 +1,7 @@
+# Carpeta para capturas de pantalla de evidencias del Laboratorio 14
+# Imágenes requeridas:
+# 01_progreso.png - Tarea con progreso en ejecución y contador de toques.
+# 02_cancelacion.png - Tarea cancelada a mitad de proceso.
+# 03_primos.png - Cálculo de números primos (hasta 500000 -> 41538 primos).
+# 04_comparacion.png - Carga secuencial (~5000 ms) vs Carga concurrente (~3000 ms).
+# 05_error.png - Simulación de error de red y botón de reintento.
