@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.tecsup.centrotareas.model.CargaUi
 import com.tecsup.centrotareas.model.PrimosUi
 import com.tecsup.centrotareas.viewmodel.TareasViewModel
 
@@ -34,6 +35,9 @@ fun PantallaTareas(vm: TareasViewModel) {
     }
 
     val primos by vm.primos.collectAsStateWithLifecycle()
+    val carga by vm.carga.collectAsStateWithLifecycle()
+    val cargando = carga is CargaUi.Cargando
+    val simularError by vm.simularError.collectAsStateWithLifecycle()
 
     var numero by remember {
         mutableStateOf("500000")
@@ -235,21 +239,90 @@ fun PantallaTareas(vm: TareasViewModel) {
                     )
 
                     Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Switch(
+                            checked = simularError,
+                            onCheckedChange = { valor ->
+                                vm.cambiarSimularError(valor)
+                            },
+                            enabled = !cargando
+                        )
+
+                        Text("Simular error")
+                    }
+
+                    Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
 
                         OutlinedButton(
-                            onClick = { },
-                            enabled = false
+                            onClick = {
+                                vm.cargarUnaPorUna()
+                            },
+                            enabled = !cargando
                         ) {
                             Text("Una por una")
                         }
 
                         Button(
-                            onClick = { },
-                            enabled = false
+                            onClick = {
+                                vm.cargarALaVez()
+                            },
+                            enabled = !cargando
                         ) {
                             Text("A la vez")
+                        }
+                    }
+
+                    when (val estado = carga) {
+
+                        is CargaUi.Inicial -> {
+                            // Todavía no se han cargado datos
+                        }
+
+                        is CargaUi.Cargando -> {
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
+
+                        is CargaUi.Exito -> {
+
+                            Card(
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color(0xFFE0F2E1)
+                                )
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(12.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+
+                                    Text(
+                                        text = "Modo: ${estado.modo}",
+                                        fontWeight = FontWeight.Bold
+                                    )
+
+                                    Text("Perfil: ${estado.perfil}")
+
+                                    Text("Pedidos: ${estado.pedidos}")
+
+                                    Text("Tiempo: ${estado.milisegundos} ms")
+                                }
+                            }
+                        }
+
+                        is CargaUi.Error -> {
+                            // Errores se agregan en el commit 8
                         }
                     }
                 }

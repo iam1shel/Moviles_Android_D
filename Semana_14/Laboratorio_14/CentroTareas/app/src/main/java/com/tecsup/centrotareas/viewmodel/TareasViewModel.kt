@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tecsup.centrotareas.data.TareasRepository
+import com.tecsup.centrotareas.model.CargaUi
 import com.tecsup.centrotareas.model.PrimosUi
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +15,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 
 class TareasViewModel(
     private val repo: TareasRepository
@@ -126,5 +129,104 @@ class TareasViewModel(
 
     fun cancelarPrimos() {
         trabajoPrimos?.cancel()
+    }
+
+    private val _carga = MutableStateFlow<CargaUi>(
+        CargaUi.Inicial
+    )
+
+    val carga: StateFlow<CargaUi> = _carga.asStateFlow()
+
+    private val _simularError = MutableStateFlow(false)
+    val simularError: StateFlow<Boolean> = _simularError.asStateFlow()
+
+    fun cambiarSimularError(valor: Boolean) {
+        _simularError.value = valor
+    }
+
+    fun cargarUnaPorUna() {
+
+        if (_carga.value is CargaUi.Cargando) return
+
+        _carga.value = CargaUi.Cargando
+
+        viewModelScope.launch {
+
+            val inicio = System.currentTimeMillis()
+
+            try {
+
+                val perfil = repo.cargarPerfil()
+
+                val pedidos = repo.cargarPedidos(_simularError.value)
+
+                val tiempo = System.currentTimeMillis() - inicio
+
+                _carga.value = CargaUi.Exito(
+                    modo = "Una por una",
+                    perfil = perfil,
+                    pedidos = pedidos.size,
+                    milisegundos = tiempo
+                )
+
+            } catch (e: CancellationException) {
+                throw e
+
+            } catch (e: Exception) {
+
+                _carga.value = CargaUi.Error(
+                    "No se pudo cargar: ${e.message}"
+                )
+            }
+        }
+    }
+
+    fun cargarALaVez() {
+
+        if (_carga.value is CargaUi.Cargando) return
+
+        _carga.value = CargaUi.Cargando
+
+        viewModelScope.launch {
+
+            val inicio = System.currentTimeMillis()
+
+            try {
+
+                val resultado = coroutineScope {
+
+                    val perfil = async {
+                        repo.cargarPerfil()
+                    }
+
+                    val pedidos = async {
+                        repo.cargarPedidos(_simularError.value)
+                    }
+
+                    Pair(
+                        perfil.await(),
+                        pedidos.await()
+                    )
+                }
+
+                val tiempo = System.currentTimeMillis() - inicio
+
+                _carga.value = CargaUi.Exito(
+                    modo = "A la vez",
+                    perfil = resultado.first,
+                    pedidos = resultado.second.size,
+                    milisegundos = tiempo
+                )
+
+            } catch (e: CancellationException) {
+                throw e
+
+            } catch (e: Exception) {
+
+                _carga.value = CargaUi.Error(
+                    "No se pudo cargar: ${e.message}"
+                )
+            }
+        }
     }
 }

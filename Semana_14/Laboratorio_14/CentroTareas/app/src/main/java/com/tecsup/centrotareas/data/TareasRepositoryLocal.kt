@@ -1,18 +1,23 @@
 package com.tecsup.centrotareas.data
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 
 class TareasRepositoryLocal : TareasRepository {
 
     override suspend fun cargarPerfil(): String {
+        delay(2000)
         return "Ana Torres (ficticia)"
     }
 
     override suspend fun cargarPedidos(
         simularError: Boolean
     ): List<String> {
+
+        delay(3000)
+
         return listOf(
             "Pedido 101",
             "Pedido 102",
