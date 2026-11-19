@@ -97,7 +97,7 @@ fun PantallaTareas(vm: TareasViewModel) {
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Button(
-                            onClick = { vm.tareaLargaMala() },
+                            onClick = { vm.tareaLarga() },
                             enabled = !corriendo
                         ) {
                             Text("Iniciar")

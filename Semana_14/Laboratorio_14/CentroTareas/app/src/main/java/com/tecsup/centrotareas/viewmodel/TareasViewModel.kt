@@ -1,12 +1,18 @@
 package com.tecsup.centrotareas.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.tecsup.centrotareas.data.TareasRepository
 import com.tecsup.centrotareas.model.CargaUi
 import com.tecsup.centrotareas.model.PrimosUi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class TareasViewModel(
     private val repo: TareasRepository
@@ -21,15 +27,38 @@ class TareasViewModel(
     private val _corriendo = MutableStateFlow(false)
     val corriendo: StateFlow<Boolean> = _corriendo.asStateFlow()
 
-    fun tareaLargaMala() {
-        _corriendo.value = true
-        _mensaje.value = "Trabajando (Malo)..."
-        Thread.sleep(4000)
-        _mensaje.value = "Terminó (Malo)"
-        _corriendo.value = false
-    }
-
     fun tareaLarga() {
+
+        if (_corriendo.value) return
+
+        _corriendo.value = true
+        _mensaje.value = "Trabajando..."
+
+        viewModelScope.launch {
+
+            Log.d(
+                "HILO",
+                "Antes: ${Thread.currentThread().name}"
+            )
+
+            withContext(Dispatchers.Default) {
+
+                Log.d(
+                    "HILO",
+                    "Dentro: ${Thread.currentThread().name}"
+                )
+
+                delay(4000)
+            }
+
+            Log.d(
+                "HILO",
+                "Después: ${Thread.currentThread().name}"
+            )
+
+            _mensaje.value = "Terminó"
+            _corriendo.value = false
+        }
     }
 
     fun cancelar() {
