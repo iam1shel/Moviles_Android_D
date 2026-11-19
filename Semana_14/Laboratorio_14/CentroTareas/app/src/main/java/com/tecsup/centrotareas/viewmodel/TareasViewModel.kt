@@ -32,6 +32,7 @@ class TareasViewModel(
         if (_corriendo.value) return
 
         _corriendo.value = true
+        _progreso.value = 0f
         _mensaje.value = "Trabajando..."
 
         viewModelScope.launch {
@@ -48,7 +49,12 @@ class TareasViewModel(
                     "Dentro: ${Thread.currentThread().name}"
                 )
 
-                delay(4000)
+                for (i in 1..100) {
+
+                    delay(40)
+
+                    _progreso.value = i / 100f
+                }
             }
 
             Log.d(
