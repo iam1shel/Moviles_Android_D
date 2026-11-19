@@ -13,11 +13,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.tecsup.centrotareas.model.CargaUi
 import com.tecsup.centrotareas.model.PrimosUi
 import com.tecsup.centrotareas.viewmodel.TareasViewModel
 
@@ -34,9 +34,6 @@ fun PantallaTareas(vm: TareasViewModel) {
     }
 
     val primos by vm.primos.collectAsStateWithLifecycle()
-    val carga by vm.carga.collectAsStateWithLifecycle()
-    val cargando = carga is CargaUi.Cargando
-    val simularError by vm.simularError.collectAsStateWithLifecycle()
 
     var numero by remember {
         mutableStateOf("500000")
@@ -174,6 +171,49 @@ fun PantallaTareas(vm: TareasViewModel) {
                             Text("Cancelar")
                         }
                     }
+
+                    when (val estado = primos) {
+
+                        is PrimosUi.Inicial -> {
+                            // Todavía no hay resultados
+                        }
+
+                        is PrimosUi.Calculando -> {
+                            CircularProgressIndicator()
+                            Text("Calculando...")
+                        }
+
+                        is PrimosUi.Listo -> {
+
+                            Card(
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color(0xFFE0F2E1)
+                                ),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(12.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+
+                                    Text(
+                                        text = "Primos hasta $numero: ${estado.cantidad}",
+                                        fontWeight = FontWeight.Bold
+                                    )
+
+                                    Text(
+                                        text = "Tiempo: ${estado.milisegundos} ms"
+                                    )
+                                }
+                            }
+                        }
+
+                        is PrimosUi.Cancelado -> {
+                            Text("Cancelado")
+                        }
+                    }
                 }
             }
 
@@ -195,38 +235,19 @@ fun PantallaTareas(vm: TareasViewModel) {
                     )
 
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Switch(
-                            checked = simularError,
-                            onCheckedChange = { valor ->
-                                vm.cambiarSimularError(valor)
-                            },
-                            enabled = !cargando
-                        )
-
-                        Text("Simular error")
-                    }
-
-                    Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
 
                         OutlinedButton(
-                            onClick = {
-                                vm.cargarUnaPorUna()
-                            },
-                            enabled = !cargando
+                            onClick = { },
+                            enabled = false
                         ) {
                             Text("Una por una")
                         }
 
                         Button(
-                            onClick = {
-                                vm.cargarALaVez()
-                            },
-                            enabled = !cargando
+                            onClick = { },
+                            enabled = false
                         ) {
                             Text("A la vez")
                         }

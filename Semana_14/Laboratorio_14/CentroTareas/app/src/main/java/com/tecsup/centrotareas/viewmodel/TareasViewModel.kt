@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tecsup.centrotareas.data.TareasRepository
-import com.tecsup.centrotareas.model.CargaUi
 import com.tecsup.centrotareas.model.PrimosUi
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -86,28 +85,46 @@ class TareasViewModel(
         trabajo?.cancel()
     }
 
-    private val _primos = MutableStateFlow<PrimosUi>(PrimosUi.Inicial)
+    private val _primos = MutableStateFlow<PrimosUi>(
+        PrimosUi.Inicial
+    )
+
     val primos: StateFlow<PrimosUi> = _primos.asStateFlow()
 
+    private var trabajoPrimos: Job? = null
+
     fun contar(hasta: Int) {
+
+        if (hasta < 2) return
+
+        if (trabajoPrimos?.isActive == true) return
+
+        trabajoPrimos = viewModelScope.launch {
+
+            _primos.value = PrimosUi.Calculando
+
+            val inicio = System.currentTimeMillis()
+
+            try {
+
+                val cantidad = repo.contarPrimos(hasta)
+
+                val tiempo = System.currentTimeMillis() - inicio
+
+                _primos.value = PrimosUi.Listo(
+                    cantidad = cantidad,
+                    milisegundos = tiempo
+                )
+
+            } catch (e: CancellationException) {
+
+                _primos.value = PrimosUi.Cancelado
+                throw e
+            }
+        }
     }
 
     fun cancelarPrimos() {
-    }
-
-    private val _carga = MutableStateFlow<CargaUi>(CargaUi.Inicial)
-    val carga: StateFlow<CargaUi> = _carga.asStateFlow()
-
-    private val _simularError = MutableStateFlow(false)
-    val simularError: StateFlow<Boolean> = _simularError.asStateFlow()
-
-    fun cambiarSimularError(valor: Boolean) {
-        _simularError.value = valor
-    }
-
-    fun cargarUnaPorUna() {
-    }
-
-    fun cargarALaVez() {
+        trabajoPrimos?.cancel()
     }
 }
