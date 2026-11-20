@@ -1,0 +1,37 @@
+[1mdiff --git a/README.md b/README.md[m
+[1mindex e730dce..8b13789 100644[m
+[1m--- a/README.md[m
+[1m+++ b/README.md[m
+[36m@@ -1,31 +1 @@[m
+[31m-# Mapa de las 16 semanas[m
+ [m
+[31m-Repositorio de laboratorios de Programacion en Moviles - Tecsup 2026-II.[m
+[31m-[m
+[31m-El codigo se organiza en las ramas `sin-ia` y `con-ia`.[m
+[31m-La rama `main` se mantiene como rama principal.[m
+[31m-[m
+[31m-## Laboratorios[m
+[31m-[m
+[31m-| # | Laboratorio | sin-ia | con-ia |[m
+[31m-|---|---|:---:|:---:|[m
+[31m-| 01 | [Laboratorio 01: Android Studio y GitHub](Semana_01/Laboratorio_01) | ✅ | ✅ |[m
+[31m-| 02 | [Laboratorio 02: Carrito de compras](Semana_02/Laboratorio_02) | ✅ | ✅ |[m
+[31m-| 03 | [Laboratorio 03: Registro de Producto](Semana_03/Laboratorio_03) | ✅ | ✅ |[m
+[31m-| 04 | [Laboratorio 04](Semana_04/Laboratorio_04) | ✅ | ✅ |[m
+[31m-| 05 | [Laboratorio 05](Semana_05/Laboratorio_05) | ✅ | ✅ |[m
+[31m-| 06 | [Laboratorio 06: TECSUP Store](Semana_06/Laboratorio_06) | ✅ | ✅ |[m
+[31m-| 07 | [Laboratorio 07](Semana_07/Laboratorio_07) | ✅ | ✅ |[m
+[31m-| 08 | [HuellitasVet](Semana_08/Laboratorio_08) | ✅ | ✅ |[m
+[31m-| 09 | [Laboratorio 09](Semana_09/Laboratorio_09) | ✅ | ✅ |[m
+[31m-| 10 | [Laboratorio 10](Semana_10/Laboratorio_10) | ✅ | ✅ |[m
+[31m-| 11 | [Laboratorio 11](Semana_11/Laboratorio_11) | ✅ | ✅ |[m
+[31m-| 12 | [Laboratorio 12](Semana_12/Laboratorio_12) | ✅ | ✅ |[m
+[31m-| 13 | [CampusGPS - Localizacion Geografica](Semana_13/Laboratorio_13) | ✅ | ✅ |[m
+[31m-| 14 | [CentroTareas - Hilos en Android](Semana_14/Laboratorio_14/CentroTareas) | ✅ | — |[m
+[31m-| 15 | [Laboratorio 15](Semana_15/Laboratorio_15) | ✅ | ✅ |[m
+[31m-| 16 | [Laboratorio 16](Semana_16/Laboratorio_16) | ✅ | ✅ |[m
+[31m-[m
+[31m----[m
+[31m-[m
+[31m-Ultima actualizacion: 18 de noviembre de 2026.[m
+\ No newline at end of file[m
