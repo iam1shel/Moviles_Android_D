@@ -17,7 +17,7 @@ Desarrollar y consolidar los conceptos fundamentales de concurrencia y programac
 
 - **Lenguaje:** Kotlin 2.2
 - **UI Framework:** Jetpack Compose (Material3)
-- **Asincronía & Concurrencia:** Kotlin Coroutines (`viewModelScope`, `launch`, `async`, `await`, `coroutineScope`, `withContext`, `Dispatchers.Default`, `Job`, `ensureActive`, `CancellationException`)
+- **Asincronía & Concurrencia:** Kotlin Coroutines (`viewModelScope`, `launch`, `async`, `await`, `coroutineScope`, `withContext`, `Dispatchers.Default`, `Job`, `ensureActive`, `CancellationException`, `Flow`, `flow`, `flowOn`)
 - **Gestión de Estado:** `StateFlow`, `MutableStateFlow`, `collectAsStateWithLifecycle`
 - **Arquitectura:** MVVM (Model-View-ViewModel) + Repository Pattern
 - **Pruebas Automatizadas:** JUnit 4 + `kotlinx-coroutines-test`
@@ -49,6 +49,14 @@ La aplicación consta de tres tarjetas de interacción asíncrona dentro de una 
 
 ---
 
+## 🚀 Mejoras de la Fase 2 con IA
+
+1. **Progreso desde el Repository (`Flow<Float>`):** La generación de valores de progreso (0f a 1f) se delegó al Repository utilizando `flow` y `flowOn(Dispatchers.Default)`, manteniendo el ViewModel limpio enfocado únicamente en la recolección y exposición de `StateFlow`.
+2. **Comparación Visual de Tiempos:** Se incorporó una sección analítica en la tarjeta de cargas que registra y contrasta los tiempos reales de ejecución secuencial vs. concurrente, calculando de manera dinámica el tiempo ahorrado en milisegundos y el porcentaje de mejora con barras gráficas.
+3. **Reintento Automático de Cargas:** Se implementó una política robusta de reintentos automáticos (hasta 3 reintentos con retraso progresivo) al fallar las peticiones de red simuladas, mostrando estados de carga informativos ("Reintentando 1 de 3...", etc.) y respetando la cancelación cooperativa.
+
+---
+
 ## 🏗️ Arquitectura MVVM + Repository
 
 El proyecto implementa estrictamente el patrón de arquitectura recomendado por Android:
@@ -64,19 +72,13 @@ El proyecto implementa estrictamente el patrón de arquitectura recomendado por 
 │                    Capa de ViewModel                     │
 │  [TareasViewModel.kt] (Gestiona estado UI & Corrutinas)  │
 └────────────────────────────▲─────────────────────────────┘
-                             │ Llama a suspend functions
+                             │ Llama a suspend functions / Flows
 ┌────────────────────────────┴─────────────────────────────┐
 │                    Capa de Repositorio                   │
 │  [TareasRepository.kt] (Interfaz)                        │
 │  [TareasRepositoryLocal.kt] (Implementación de Datos)   │
 └──────────────────────────────────────────────────────────┘
 ```
-
-### Flujo de Datos
-1. La **UI** observa los `StateFlow` expuestos por el `TareasViewModel` mediante `collectAsStateWithLifecycle()`.
-2. Las acciones del usuario (clics en botones, toggles) invocan métodos del `TareasViewModel`.
-3. El **ViewModel** gestiona el alcance de corrutinas (`viewModelScope`) y delega el procesamiento o la carga de datos al **Repository**.
-4. El **Repository** ejecuta operaciones asíncronas (`withContext(Dispatchers.Default)`, `delay`) y retorna los resultados o lanza excepciones.
 
 ---
 
@@ -86,7 +88,7 @@ El proyecto implementa estrictamente el patrón de arquitectura recomendado por 
 com.tecsup.centrotareas/
 ├── MainActivity.kt                  # Punto de entrada de la app y configuración de Compose
 ├── data/
-│   ├── TareasRepository.kt          # Interfaz de datos con suspend functions
+│   ├── TareasRepository.kt          # Interfaz de datos con suspend functions y Flow
 │   └── TareasRepositoryLocal.kt     # Implementación local del repositorio y algoritmos
 ├── model/
 │   └── Estados.kt                   # Sealed interfaces para estados de UI (PrimosUi, CargaUi)
@@ -107,35 +109,37 @@ com.tecsup.centrotareas/
 3. **`async` / `await`:** Builder para corrutinas que retornan un valor (`Deferred<T>`). Permite ejecutar múltiples tareas asíncronas en paralelo y esperar sus resultados con `await()`.
 4. **`coroutineScope`:** Builder que crea un alcance delimitado (structured concurrency), garantizando que si una tarea falla, se cancelen las demás automáticamente.
 5. **`withContext(Dispatchers.Default)`:** Cambia el contexto de ejecución al pool de hilos de CPU para no bloquear el hilo principal durante operaciones pesadas.
-6. **`ensureActive()`:** Comprueba si el trabajo actual ha sido cancelado dentro de bucles de CPU intensivos y lanza `CancellationException` de ser necesario.
-7. **`CancellationException`:** Excepción estándar de señalización de cancelación en Kotlin Coroutines. Es capturada para actualizar el estado visual y re-lanzada para mantener la propagación correcta.
+6. **`Flow`, `flow`, `flowOn`:** Emisión reactiva de flujos de datos asíncronos desde el Repository ejecutados en hilos de fondo (`Dispatchers.Default`).
+7. **`ensureActive()`:** Comprueba si el trabajo actual ha sido cancelado dentro de bucles de CPU intensivos y lanza `CancellationException` de ser necesario.
+8. **`CancellationException`:** Excepción estándar de señalización de cancelación en Kotlin Coroutines. Es capturada para actualizar el estado visual y re-lanzada para mantener la propagación correcta.
 
 ---
 
 ## 🧪 Pruebas Automatizadas y Aceptación
 
-Se ejecutaron **13 pruebas unitarias automatizadas** comprobando tanto la lógica del repositorio como el comportamiento del ViewModel:
+Se ejecutaron **14 pruebas unitarias automatizadas** comprobando tanto la lógica del repositorio, el flujo de progreso como el comportamiento del ViewModel:
 
 ```bash
 ./gradlew app:testDebugUnitTest
 ```
 
-### Resumen de Pruebas Unitarias (`13/13 Aprobadas`)
+### Resumen de Pruebas Unitarias (`14/14 Aprobadas`)
 - `TareasRepositoryTest`:
   - `contarPrimos_hasta1000_retorna168` -> **PASÓ**
   - `contarPrimos_hasta500000_retorna41538` -> **PASÓ**
   - `cargarPerfil_retornaNombreCorrecto` -> **PASÓ**
   - `cargarPedidos_sinError_retornaListaPedidos` -> **PASÓ**
   - `cargarPedidos_conError_lanzaIOException` -> **PASÓ**
+  - `observarProgreso_emiteValoresHasta1` -> **PASÓ**
 - `TareasViewModelTest`:
   - `estadoInicial_esCorrecto` -> **PASÓ**
+  - `tareaLarga_colectaProgresoRepository` -> **PASÓ**
   - `contarPrimos_exito_actualizaEstadoListo` -> **PASÓ**
   - `contarPrimos_cancelar_actualizaEstadoCancelado` -> **PASÓ**
   - `cargarUnaPorUna_exito_actualizaExito` -> **PASÓ**
   - `cargarALaVez_exito_actualizaExito` -> **PASÓ**
   - `cargarALaVez_conErrorSimulado_actualizaEstadoError` -> **PASÓ**
   - `cambiarSimularError_actualizaStateFlow` -> **PASÓ**
-  - `tareaLarga_iniciaYSePuedeCancelar` -> **PASÓ**
 
 ---
 
@@ -162,10 +166,10 @@ Se ejecutaron **13 pruebas unitarias automatizadas** comprobando tanto la lógic
 
 Las capturas de pantalla se encuentran registradas en el directorio `capturas/`:
 
-1. **`capturas/01_progreso.png`:** Muestra la tarjeta 1 con la tarea en ejecución (progreso e incrementos del contador "Tócame").
+1. **`capturas/01_progreso.png`:** Muestra la tarjeta 1 con la tarea en ejecución (progreso emitido desde el Repository y contador de toques).
 2. **`capturas/02_cancelacion.png`:** Muestra la cancelación de la tarea con progreso e indicación del mensaje "Cancelado".
 3. **`capturas/03_primos.png`:** Muestra el resultado de contar números primos hasta 500,000 (41,538 primos) con el tiempo en milisegundos en el recuadro verde.
-4. **`capturas/04_comparacion.png`:** Muestra la comparación visual de tiempos entre la carga "Una por una" (~5000 ms) y "A la vez" (~3000 ms).
-5. **`capturas/05_error.png`:** Muestra la simulación de error de red con el recuadro rojo y el botón "Reintentar".
+4. **`capturas/04_comparacion.png`:** Muestra la comparación visual de tiempos y barras de rendimiento entre la carga secuencial y concurrente.
+5. **`capturas/05_error.png`:** Muestra la simulación de reintentos automáticos (1 de 3, etc.) y error final con el botón "Reintentar".
 
 > **Nota sobre capturas:** Si estás ejecutando en un entorno local con emulador activo, puedes capturar directamente las pantallas solicitadas y guardarlas en la carpeta `capturas/` con los nombres indicados.

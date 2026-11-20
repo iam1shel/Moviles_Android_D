@@ -1,8 +1,8 @@
 package com.tecsup.centrotareas
 
 import com.tecsup.centrotareas.data.TareasRepositoryLocal
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -47,5 +47,12 @@ class TareasRepositoryTest {
     @Test(expected = IOException::class)
     fun cargarPedidos_conError_lanzaIOException() = runTest {
         repository.cargarPedidos(simularError = true)
+    }
+
+    @Test
+    fun observarProgreso_emiteValoresHasta1() = runTest {
+        val valores = repository.observarProgreso().toList()
+        assertEquals(100, valores.size)
+        assertEquals(1.0f, valores.last(), 0.001f)
     }
 }
