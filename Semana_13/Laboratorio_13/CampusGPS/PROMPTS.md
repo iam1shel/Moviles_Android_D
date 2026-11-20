@@ -1,23 +1,17 @@
-﻿# Laboratorio 13 — Uso de IA (Gemini)
+﻿# Documentación de Prompts e Interacción con IA (Laboratorio 13 — CampusGPS)
 
-## Fase 2: Mejoras de CampusGPS
+Este documento registra los prompts utilizados con Gemini, las respuestas obtenidas, las decisiones técnicas y los cambios realizados durante el desarrollo de la Fase 2 de CampusGPS.
 
-Se utilizó Gemini como asistente para implementar mejoras en la aplicación CampusGPS, manteniendo Kotlin, Jetpack Compose, Material 3 y la arquitectura MVVM + Repository.
+## Tabla de Prompts y Decisiones Técnicas
 
 | Prompt utilizado | Respuesta de Gemini | Cambios realizados o descartados | Justificación técnica |
-|---|---|---|---|
-| Implementar filtros por categoría con FilterChip. | Agregó filtros para Estudio, Comida, Eventos y Servicios. | Se incorporaron filtros para el mapa y la lista. | Permite consultar lugares por categoría sin modificar los datos del Repository. |
-| Implementar un selector de radio de 100, 200 y 500 metros. | Agregó controles de radio y un círculo en Google Maps. | Se incorporó la selección del radio de cercanía. | Facilita identificar los lugares cercanos al usuario. |
-| Guardar el último lugar seleccionado mediante DataStore. | Implementó persistencia de la selección. | Se agregó un Repository para gestionar DataStore. | Permite conservar la selección al reiniciar la aplicación sin colocar Context en el ViewModel. |
-| Modernizar CampusGPS utilizando Material 3. | Generó una interfaz con barra azul, tarjetas, filtros y controles visuales. | Se corrigieron referencias al ícono Navigation por problemas de compilación. | Mejora la presentación sin modificar la lógica de negocio. |
+| :--- | :--- | :--- | :--- |
+| **"¿Cómo implementar filtros por categoría usando FilterChip en Material 3 manteniendo el orden por cercanía y actualizando el mapa?"** | Sugirió combinar `_lugares` y `_categoriaSeleccionada` mediante `Flow.combine()` en el ViewModel y exponer un StateFlow `lugaresFiltrados` consumido por `PantallaMapa`. | Se creó `lugaresFiltrados` en el ViewModel usando `combine()` y se agregaron `FilterChip`s horizontales en la UI. | Mantiene la separación MVVM, evita lógica de negocio en Composables y asegura la sincronización en tiempo real entre la lista y los marcadores del mapa. |
+| **"¿Cómo agregar un selector de radio de cercanía y dibujar un círculo semitransparente alrededor de la ubicación del usuario en Google Maps Compose?"** | Indicó usar el componente `Circle` de `com.google.maps.android.compose` y filtrar la lista de lugares en el ViewModel cuando `radio > 0f`. | Se añadió el estado `radioSeleccionado` en el ViewModel, el selector de radio en la UI y el composable `Circle` en `MapaUbicacion`. | Permite acotar visualmente el radio de búsqueda y filtrar los lugares dentro de la distancia especificada sin alterar los datos originales del repositorio. |
+| **"¿Cómo persistir el último lugar seleccionado utilizando DataStore Preferences en arquitectura MVVM + Repository sin pasar Context al ViewModel?"** | Propuso crear una interfaz `PreferenciasRepository` y su implementación `PreferenciasRepositoryDataStore` inyectada mediante `CampusViewModelFactory`. | Se creó `PreferenciasRepository` y `PreferenciasRepositoryDataStore`, se añadió `androidx.datastore:datastore-preferences` y se actualizó el ViewModel. | Protege al ViewModel de dependencias de Android (`Context`), cumple con el principio de inversión de dependencias y asegura la persistencia transparente de la selección. |
+| **"¿Por qué el botón 'Ir' no mueve la cámara cuando se selecciona el mismo lugar o al iniciar la app con DataStore?"** | Explicó que `LaunchedEffect` solo se dispara cuando cambia el valor de su clave (`seleccionadoId`). Si el ID no cambia, la cámara no se mueve. | Se introdujo un evento de navegación `eventoAnimacion` en el ViewModel mediante `MutableStateFlow` que notifica explícitamente las solicitudes de centrado de cámara. | Permite repetir acciones de navegación hacia un mismo punto o restaurar selecciones persistidas sin depender exclusivamente del cambio de ID. |
+| **"¿Cómo estructurar el rediseño visual de CampusGPS con la paleta de colores Material 3 solicitada y diseño responsivo para Pixel 6?"** | Proporcionó pautas sobre `lightColorScheme` personalizado, esquinas redondeadas en mapas y tarjetas, y componentes accesibles en `Scaffold`. | Se configuró `CampusColorScheme` en `MainActivity.kt` y se aplicaron bordes redondeados, contenedores estilizados y tarjetas de error modernas. | Otorga una apariencia profesional, coherente con las guías de Material 3 y adaptada correctamente a pantallas móviles. |
 
-## Validación
-
-- Se compiló el proyecto con Gradle.
-- Se probó la interfaz en el emulador Pixel 6.
-- Se tomaron capturas de las tres mejoras funcionales.
-- Se corrigió un error de compilación relacionado con el ícono Navigation.
-
-## Conclusión
-
-Gemini ayudó a implementar filtros, radio de cercanía, persistencia con DataStore y mejoras visuales. Se revisó el resultado y se corrigió un error de compilación para mantener la aplicación funcional.
+## Conclusiones Técnicas
+1. **MVVM + Repository**: Se mantuvo una separación estricta de responsabilidades. La persistencia (DataStore), la geolocalización (FusedLocationProvider) y los cálculos (Distancia/Formato) residen en repositorios o utilidades, dejando los Composables limpios de lógica de negocio.
+2. **Reactividad**: El uso de `StateFlow` y `combine()` garantiza que cualquier cambio en filtros, radio o ubicación actual actualice de forma reactiva y simultánea la UI, la lista y el mapa.
