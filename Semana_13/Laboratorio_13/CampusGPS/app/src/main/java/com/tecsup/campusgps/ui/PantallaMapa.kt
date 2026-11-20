@@ -4,7 +4,9 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,8 +25,12 @@ fun PantallaMapa(vm: MapaViewModel) {
     val context = LocalContext.current
     val estado by vm.estado.collectAsStateWithLifecycle()
     val lugares by vm.lugares.collectAsStateWithLifecycle()
+    val lugaresFiltrados by vm.lugaresFiltrados.collectAsStateWithLifecycle()
+    val categoriaSeleccionada by vm.categoriaSeleccionada.collectAsStateWithLifecycle()
     val seleccionadoId by vm.seleccionado.collectAsStateWithLifecycle()
     val masCercano by vm.masCercano.collectAsStateWithLifecycle()
+
+    val categorias = listOf("Todos", "Estudio", "Comida", "Eventos", "Servicios")
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -47,7 +53,7 @@ fun PantallaMapa(vm: MapaViewModel) {
                 .padding(padding)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Button(
                 onClick = {
@@ -74,6 +80,22 @@ fun PantallaMapa(vm: MapaViewModel) {
                 enabled = estado !is UbicacionUi.Buscando
             ) {
                 Text("Obtener mi ubicación")
+            }
+
+            // Filtros por Categoría (FilterChip)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                categorias.forEach { cat ->
+                    FilterChip(
+                        selected = cat == categoriaSeleccionada,
+                        onClick = { vm.seleccionarCategoria(cat) },
+                        label = { Text(cat) }
+                    )
+                }
             }
 
             when (val e = estado) {
@@ -121,7 +143,7 @@ fun PantallaMapa(vm: MapaViewModel) {
 
             MapaUbicacion(
                 estado = estado,
-                lugares = lugares,
+                lugares = lugaresFiltrados,
                 seleccionadoId = seleccionadoId,
                 masCercano = masCercano,
                 onLugarClick = { id -> vm.seleccionar(id) },
@@ -131,12 +153,12 @@ fun PantallaMapa(vm: MapaViewModel) {
             )
 
             ListaLugares(
-                lugares = lugares,
+                lugares = lugaresFiltrados,
                 seleccionadoId = seleccionadoId,
                 onLugarClick = { id -> vm.seleccionar(id) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(220.dp)
+                    .height(200.dp)
             )
         }
     }

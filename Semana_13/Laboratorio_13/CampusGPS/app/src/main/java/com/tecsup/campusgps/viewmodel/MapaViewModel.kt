@@ -14,6 +14,9 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.launch
 
 class MapaViewModel(
@@ -26,11 +29,27 @@ class MapaViewModel(
     private val _lugares = MutableStateFlow(lugaresRepo.obtenerLugares().map { LugarConDistancia(it, null) })
     val lugares: StateFlow<List<LugarConDistancia>> = _lugares.asStateFlow()
 
+    private val _categoriaSeleccionada = MutableStateFlow("Todos")
+    val categoriaSeleccionada: StateFlow<String> = _categoriaSeleccionada.asStateFlow()
+
+    val lugaresFiltrados: StateFlow<List<LugarConDistancia>> = combine(_lugares, _categoriaSeleccionada) { lugares, cat ->
+        if (cat == "Todos") lugares
+        else lugares.filter { it.lugar.categoria.equals(cat, ignoreCase = true) }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = lugaresRepo.obtenerLugares().map { LugarConDistancia(it, null) }
+    )
+
     private val _seleccionado = MutableStateFlow<Int?>(null)
     val seleccionado: StateFlow<Int?> = _seleccionado.asStateFlow()
 
     private val _masCercano = MutableStateFlow<Lugar?>(null)
     val masCercano: StateFlow<Lugar?> = _masCercano.asStateFlow()
+
+    fun seleccionarCategoria(categoria: String) {
+        _categoriaSeleccionada.value = categoria
+    }
 
     fun buscar() {
         if (_estado.value == UbicacionUi.Buscando) return
