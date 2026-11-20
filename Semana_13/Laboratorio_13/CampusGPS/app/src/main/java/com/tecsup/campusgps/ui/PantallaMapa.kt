@@ -27,10 +27,12 @@ fun PantallaMapa(vm: MapaViewModel) {
     val lugares by vm.lugares.collectAsStateWithLifecycle()
     val lugaresFiltrados by vm.lugaresFiltrados.collectAsStateWithLifecycle()
     val categoriaSeleccionada by vm.categoriaSeleccionada.collectAsStateWithLifecycle()
+    val radioSeleccionado by vm.radioSeleccionado.collectAsStateWithLifecycle()
     val seleccionadoId by vm.seleccionado.collectAsStateWithLifecycle()
     val masCercano by vm.masCercano.collectAsStateWithLifecycle()
 
     val categorias = listOf("Todos", "Estudio", "Comida", "Eventos", "Servicios")
+    val radios = listOf(0f to "Todos", 100f to "100m", 200f to "200m", 500f to "500m")
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -53,7 +55,7 @@ fun PantallaMapa(vm: MapaViewModel) {
                 .padding(padding)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Button(
                 onClick = {
@@ -82,7 +84,7 @@ fun PantallaMapa(vm: MapaViewModel) {
                 Text("Obtener mi ubicación")
             }
 
-            // Filtros por Categoría (FilterChip)
+            // Filtros por Categoría
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -94,6 +96,24 @@ fun PantallaMapa(vm: MapaViewModel) {
                         selected = cat == categoriaSeleccionada,
                         onClick = { vm.seleccionarCategoria(cat) },
                         label = { Text(cat) }
+                    )
+                }
+            }
+
+            // Selector de Radio
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Radio:", style = MaterialTheme.typography.bodyMedium)
+                radios.forEach { (valor, etiqueta) ->
+                    FilterChip(
+                        selected = valor == radioSeleccionado,
+                        onClick = { vm.seleccionarRadio(valor) },
+                        label = { Text(etiqueta) }
                     )
                 }
             }
@@ -146,6 +166,7 @@ fun PantallaMapa(vm: MapaViewModel) {
                 lugares = lugaresFiltrados,
                 seleccionadoId = seleccionadoId,
                 masCercano = masCercano,
+                radioSeleccionado = radioSeleccionado,
                 onLugarClick = { id -> vm.seleccionar(id) },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -158,7 +179,7 @@ fun PantallaMapa(vm: MapaViewModel) {
                 onLugarClick = { id -> vm.seleccionar(id) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(180.dp)
             )
         }
     }

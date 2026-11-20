@@ -3,10 +3,12 @@ package com.tecsup.campusgps.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
@@ -22,6 +24,7 @@ fun MapaUbicacion(
     lugares: List<LugarConDistancia>,
     seleccionadoId: Int?,
     masCercano: Lugar?,
+    radioSeleccionado: Float,
     onLugarClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -65,6 +68,16 @@ fun MapaUbicacion(
                 title = "Estás aquí",
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
             )
+
+            if (radioSeleccionado > 0f) {
+                Circle(
+                    center = userLatLng,
+                    radius = radioSeleccionado.toDouble(),
+                    fillColor = Color(0x221565A8),
+                    strokeColor = Color(0xFF1565A8),
+                    strokeWidth = 3f
+                )
+            }
         }
 
         for (item in lugares) {
