@@ -49,4 +49,5 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
     implementation("com.google.maps.android:maps-compose:6.1.0")
     implementation("androidx.core:core-ktx:1.16.0")
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 }

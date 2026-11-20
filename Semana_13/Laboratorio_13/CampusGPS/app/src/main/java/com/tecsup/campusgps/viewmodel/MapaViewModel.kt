@@ -3,6 +3,7 @@ package com.tecsup.campusgps.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tecsup.campusgps.data.LugaresRepository
+import com.tecsup.campusgps.data.PreferenciasRepository
 import com.tecsup.campusgps.data.UbicacionRepository
 import com.tecsup.campusgps.model.Lugar
 import com.tecsup.campusgps.model.LugarConDistancia
@@ -21,7 +22,8 @@ import kotlinx.coroutines.launch
 
 class MapaViewModel(
     private val ubicacionRepo: UbicacionRepository,
-    private val lugaresRepo: LugaresRepository
+    private val lugaresRepo: LugaresRepository,
+    private val preferenciasRepo: PreferenciasRepository
 ) : ViewModel() {
     private val _estado = MutableStateFlow<UbicacionUi>(UbicacionUi.Inicial)
     val estado: StateFlow<UbicacionUi> = _estado.asStateFlow()
@@ -32,7 +34,7 @@ class MapaViewModel(
     private val _categoriaSeleccionada = MutableStateFlow("Todos")
     val categoriaSeleccionada: StateFlow<String> = _categoriaSeleccionada.asStateFlow()
 
-    private val _radioSeleccionado = MutableStateFlow(0f) // 0 means all, otherwise 100f, 200f, 500f
+    private val _radioSeleccionado = MutableStateFlow(0f)
     val radioSeleccionado: StateFlow<Float> = _radioSeleccionado.asStateFlow()
 
     val lugaresFiltrados: StateFlow<List<LugarConDistancia>> = combine(_lugares, _categoriaSeleccionada, _radioSeleccionado) { lugares, cat, radio ->
@@ -54,6 +56,14 @@ class MapaViewModel(
 
     private val _masCercano = MutableStateFlow<Lugar?>(null)
     val masCercano: StateFlow<Lugar?> = _masCercano.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            preferenciasRepo.ultimoLugarSeleccionado.collect { id ->
+                _seleccionado.value = id
+            }
+        }
+    }
 
     fun seleccionarCategoria(categoria: String) {
         _categoriaSeleccionada.value = categoria
@@ -122,5 +132,8 @@ class MapaViewModel(
 
     fun seleccionar(id: Int?) {
         _seleccionado.value = id
+        viewModelScope.launch {
+            preferenciasRepo.guardarUltimoLugar(id)
+        }
     }
 }

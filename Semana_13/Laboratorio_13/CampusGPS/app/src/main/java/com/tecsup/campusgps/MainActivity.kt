@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tecsup.campusgps.data.LugaresRepositoryLocal
+import com.tecsup.campusgps.data.PreferenciasRepositoryDataStore
 import com.tecsup.campusgps.data.UbicacionRepositoryGoogle
 import com.tecsup.campusgps.ui.PantallaMapa
 import com.tecsup.campusgps.viewmodel.CampusViewModelFactory
@@ -15,7 +16,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val factory = CampusViewModelFactory(
-            UbicacionRepositoryGoogle(applicationContext), LugaresRepositoryLocal()
+            UbicacionRepositoryGoogle(applicationContext),
+            LugaresRepositoryLocal(),
+            PreferenciasRepositoryDataStore(applicationContext)
         )
         setContent {
             MaterialTheme {
