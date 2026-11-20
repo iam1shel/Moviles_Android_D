@@ -7,14 +7,11 @@ import com.tecsup.centrotareas.data.TareasRepository
 import com.tecsup.centrotareas.model.CargaUi
 import com.tecsup.centrotareas.model.PrimosUi
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 
@@ -129,6 +126,12 @@ class TareasViewModel(
     private val _simularError = MutableStateFlow(false)
     val simularError: StateFlow<Boolean> = _simularError.asStateFlow()
 
+    private val _tiempoUnaPorUna = MutableStateFlow<Long?>(null)
+    val tiempoUnaPorUna: StateFlow<Long?> = _tiempoUnaPorUna.asStateFlow()
+
+    private val _tiempoALaVez = MutableStateFlow<Long?>(null)
+    val tiempoALaVez: StateFlow<Long?> = _tiempoALaVez.asStateFlow()
+
     fun cambiarSimularError(valor: Boolean) {
         _simularError.value = valor
     }
@@ -150,6 +153,8 @@ class TareasViewModel(
                 val pedidos = repo.cargarPedidos(_simularError.value)
 
                 val tiempo = System.currentTimeMillis() - inicio
+
+                _tiempoUnaPorUna.value = tiempo
 
                 _carga.value = CargaUi.Exito(
                     modo = "Una por una",
@@ -199,6 +204,8 @@ class TareasViewModel(
                 }
 
                 val tiempo = System.currentTimeMillis() - inicio
+
+                _tiempoALaVez.value = tiempo
 
                 _carga.value = CargaUi.Exito(
                     modo = "A la vez",

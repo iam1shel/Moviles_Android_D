@@ -39,6 +39,9 @@ fun PantallaTareas(vm: TareasViewModel) {
     val cargando = carga is CargaUi.Cargando
     val simularError by vm.simularError.collectAsStateWithLifecycle()
 
+    val tiempoUnaPorUna by vm.tiempoUnaPorUna.collectAsStateWithLifecycle()
+    val tiempoALaVez by vm.tiempoALaVez.collectAsStateWithLifecycle()
+
     var numero by remember {
         mutableStateOf("500000")
     }
@@ -353,6 +356,50 @@ fun PantallaTareas(vm: TareasViewModel) {
                                 }
                             }
                         }
+                    }
+                }
+            }
+
+            // SECCIÓN ADICIONAL: COMPARACIÓN DE RENDIMIENTO (MEJORA 2)
+            if (tiempoUnaPorUna != null && tiempoALaVez != null) {
+                Card(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "Comparación de rendimiento",
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        val tSeq = tiempoUnaPorUna ?: 0L
+                        val tPar = tiempoALaVez ?: 0L
+                        val ahorro = if (tSeq > tPar) tSeq - tPar else 0L
+                        val mejora = if (tSeq > 0) (ahorro.toFloat() / tSeq * 100).toInt() else 0
+
+                        Text("Una por una: $tSeq ms")
+                        LinearProgressIndicator(
+                            progress = { if (tSeq + tPar > 0) tSeq.toFloat() / (tSeq + tPar) else 0f },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Text("A la vez: $tPar ms")
+                        LinearProgressIndicator(
+                            progress = { if (tSeq + tPar > 0) tPar.toFloat() / (tSeq + tPar) else 0f },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Tiempo ahorrado: $ahorro ms (Mejora: $mejora %)",
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
                     }
                 }
             }
