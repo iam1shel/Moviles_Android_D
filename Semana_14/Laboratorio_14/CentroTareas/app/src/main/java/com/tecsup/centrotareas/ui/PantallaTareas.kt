@@ -36,11 +36,14 @@ fun PantallaTareas(vm: TareasViewModel) {
 
     val primos by vm.primos.collectAsStateWithLifecycle()
     val carga by vm.carga.collectAsStateWithLifecycle()
-    val cargando = carga is CargaUi.Cargando
     val simularError by vm.simularError.collectAsStateWithLifecycle()
 
+    val resultadoUnaPorUna by vm.resultadoUnaPorUna.collectAsStateWithLifecycle()
+    val resultadoALaVez by vm.resultadoALaVez.collectAsStateWithLifecycle()
     val tiempoUnaPorUna by vm.tiempoUnaPorUna.collectAsStateWithLifecycle()
     val tiempoALaVez by vm.tiempoALaVez.collectAsStateWithLifecycle()
+    val cargandoModo by vm.cargandoModo.collectAsStateWithLifecycle()
+    val cargando = cargandoModo != null
 
     var numero by remember {
         mutableStateOf("500000")
@@ -279,83 +282,99 @@ fun PantallaTareas(vm: TareasViewModel) {
                         }
                     }
 
-                    when (val estado = carga) {
-
-                        is CargaUi.Inicial -> {
-                            // Todavía no se han cargado datos
+                    if (cargando) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            CircularProgressIndicator()
+                            Text(cargandoModo ?: "Cargando...")
                         }
+                    }
 
-                        is CargaUi.Cargando -> {
+                    // Resultado Una por una
+                    if (resultadoUnaPorUna != null) {
+                        val exito = resultadoUnaPorUna!!
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFFE0F2E1)
+                            )
+                        ) {
                             Column(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
                             ) {
-                                CircularProgressIndicator()
-                                Text(estado.mensaje)
+                                Text(
+                                    text = "Modo: ${exito.modo}",
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text("Perfil: ${exito.perfil}")
+                                Text("Pedidos: ${exito.pedidos}")
+                                Text("Tiempo: ${exito.milisegundos} ms")
                             }
                         }
+                    }
 
-                        is CargaUi.Exito -> {
+                    // Resultado A la vez
+                    if (resultadoALaVez != null) {
+                        val exito = resultadoALaVez!!
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFFE0F2E1)
+                            )
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Text(
+                                    text = "Modo: ${exito.modo}",
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text("Perfil: ${exito.perfil}")
+                                Text("Pedidos: ${exito.pedidos}")
+                                Text("Tiempo: ${exito.milisegundos} ms")
+                            }
+                        }
+                    }
 
+                    if (carga is CargaUi.Error) {
+                        val err = carga as CargaUi.Error
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
                             Card(
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = Color(0xFFE0F2E1)
+                                    containerColor = MaterialTheme.colorScheme.errorContainer
                                 )
                             ) {
-                                Column(
+                                Text(
+                                    text = err.mensaje,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(12.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                                ) {
-
-                                    Text(
-                                        text = "Modo: ${estado.modo}",
-                                        fontWeight = FontWeight.Bold
-                                    )
-
-                                    Text("Perfil: ${estado.perfil}")
-
-                                    Text("Pedidos: ${estado.pedidos}")
-
-                                    Text("Tiempo: ${estado.milisegundos} ms")
-                                }
+                                    color = MaterialTheme.colorScheme.onErrorContainer
+                                )
                             }
-                        }
 
-                        is CargaUi.Error -> {
-
-                            Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            OutlinedButton(
+                                onClick = {
+                                    vm.cargarALaVez()
+                                }
                             ) {
-
-                                Card(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.errorContainer
-                                    )
-                                ) {
-                                    Text(
-                                        text = estado.mensaje,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(12.dp),
-                                        color = MaterialTheme.colorScheme.onErrorContainer
-                                    )
-                                }
-
-                                OutlinedButton(
-                                    onClick = {
-                                        vm.cargarALaVez()
-                                    }
-                                ) {
-                                    Text("Reintentar")
-                                }
+                                Text("Reintentar")
                             }
                         }
                     }
@@ -384,13 +403,13 @@ fun PantallaTareas(vm: TareasViewModel) {
                         val ahorro = if (tSeq > tPar) tSeq - tPar else 0L
                         val mejora = if (tSeq > 0) (ahorro.toFloat() / tSeq * 100).toInt() else 0
 
-                        Text("Una por una: $tSeq ms")
+                        Text("Tiempo secuencial (Una por una): $tSeq ms")
                         LinearProgressIndicator(
                             progress = { if (tSeq + tPar > 0) tSeq.toFloat() / (tSeq + tPar) else 0f },
                             modifier = Modifier.fillMaxWidth()
                         )
 
-                        Text("A la vez: $tPar ms")
+                        Text("Tiempo concurrente (A la vez): $tPar ms")
                         LinearProgressIndicator(
                             progress = { if (tSeq + tPar > 0) tPar.toFloat() / (tSeq + tPar) else 0f },
                             modifier = Modifier.fillMaxWidth()
@@ -398,7 +417,7 @@ fun PantallaTareas(vm: TareasViewModel) {
 
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Tiempo ahorrado: $ahorro ms (Mejora: $mejora %)",
+                            text = "Milisegundos ahorrados: $ahorro ms | Ahorro: $mejora %",
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.secondary
                         )

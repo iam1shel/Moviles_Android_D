@@ -16,6 +16,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -138,6 +139,18 @@ class TareasViewModelTest {
             assertEquals("Ana Torres (ficticia)", estado.perfil)
             assertEquals(3, estado.pedidos)
         }
+    }
+
+    @Test
+    fun cargas_conservanResultadosIndependientemente() = runTest {
+        viewModel.cargarUnaPorUna()
+        advanceUntilIdle()
+        assertNotNull(viewModel.resultadoUnaPorUna.value)
+
+        viewModel.cargarALaVez()
+        advanceUntilIdle()
+        assertNotNull(viewModel.resultadoALaVez.value)
+        assertNotNull(viewModel.resultadoUnaPorUna.value)
     }
 
     @Test

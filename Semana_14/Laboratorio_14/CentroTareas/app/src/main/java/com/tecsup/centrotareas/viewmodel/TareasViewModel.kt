@@ -127,25 +127,34 @@ class TareasViewModel(
     private val _simularError = MutableStateFlow(false)
     val simularError: StateFlow<Boolean> = _simularError.asStateFlow()
 
+    private val _resultadoUnaPorUna = MutableStateFlow<CargaUi.Exito?>(null)
+    val resultadoUnaPorUna: StateFlow<CargaUi.Exito?> = _resultadoUnaPorUna.asStateFlow()
+
+    private val _resultadoALaVez = MutableStateFlow<CargaUi.Exito?>(null)
+    val resultadoALaVez: StateFlow<CargaUi.Exito?> = _resultadoALaVez.asStateFlow()
+
     private val _tiempoUnaPorUna = MutableStateFlow<Long?>(null)
     val tiempoUnaPorUna: StateFlow<Long?> = _tiempoUnaPorUna.asStateFlow()
 
     private val _tiempoALaVez = MutableStateFlow<Long?>(null)
     val tiempoALaVez: StateFlow<Long?> = _tiempoALaVez.asStateFlow()
 
+    private val _cargandoModo = MutableStateFlow<String?>(null)
+    val cargandoModo: StateFlow<String?> = _cargandoModo.asStateFlow()
+
     fun cambiarSimularError(valor: Boolean) {
         _simularError.value = valor
     }
 
-    private suspend fun <T> ejecutarConReintentos(block: suspend () -> T): T {
+    private suspend fun <T> ejecutarConReintentos(modo: String, block: suspend () -> T): T {
         val maxReintentos = 3
         var intento = 0
         while (true) {
             try {
                 if (intento == 0) {
-                    _carga.value = CargaUi.Cargando("Intentando cargar...")
+                    _carga.value = CargaUi.Cargando("Intentando $modo...")
                 } else {
-                    _carga.value = CargaUi.Cargando("Reintentando $intento de 3...")
+                    _carga.value = CargaUi.Cargando("Reintentando $modo ($intento de 3)...")
                 }
                 return block()
             } catch (e: CancellationException) {
@@ -162,7 +171,9 @@ class TareasViewModel(
 
     fun cargarUnaPorUna() {
 
-        if (_carga.value is CargaUi.Cargando) return
+        if (_cargandoModo.value != null) return
+
+        _cargandoModo.value = "Una por una"
 
         viewModelScope.launch {
 
@@ -170,7 +181,7 @@ class TareasViewModel(
 
             try {
 
-                val resultado = ejecutarConReintentos {
+                val resultado = ejecutarConReintentos("Una por una") {
                     val perfil = repo.cargarPerfil()
                     val pedidos = repo.cargarPedidos(_simularError.value)
                     Pair(perfil, pedidos)
@@ -179,14 +190,18 @@ class TareasViewModel(
                 val tiempo = System.currentTimeMillis() - inicio
                 _tiempoUnaPorUna.value = tiempo
 
-                _carga.value = CargaUi.Exito(
+                val exito = CargaUi.Exito(
                     modo = "Una por una",
                     perfil = resultado.first,
                     pedidos = resultado.second.size,
                     milisegundos = tiempo
                 )
 
+                _resultadoUnaPorUna.value = exito
+                _carga.value = exito
+
             } catch (e: CancellationException) {
+                _carga.value = CargaUi.Error("Cancelado")
                 throw e
 
             } catch (e: Exception) {
@@ -194,13 +209,17 @@ class TareasViewModel(
                 _carga.value = CargaUi.Error(
                     "No se pudo cargar: ${e.message}"
                 )
+            } finally {
+                _cargandoModo.value = null
             }
         }
     }
 
     fun cargarALaVez() {
 
-        if (_carga.value is CargaUi.Cargando) return
+        if (_cargandoModo.value != null) return
+
+        _cargandoModo.value = "A la vez"
 
         viewModelScope.launch {
 
@@ -208,7 +227,7 @@ class TareasViewModel(
 
             try {
 
-                val resultado = ejecutarConReintentos {
+                val resultado = ejecutarConReintentos("A la vez") {
                     coroutineScope {
 
                         val perfil = async {
@@ -229,14 +248,18 @@ class TareasViewModel(
                 val tiempo = System.currentTimeMillis() - inicio
                 _tiempoALaVez.value = tiempo
 
-                _carga.value = CargaUi.Exito(
+                val exito = CargaUi.Exito(
                     modo = "A la vez",
                     perfil = resultado.first,
                     pedidos = resultado.second.size,
                     milisegundos = tiempo
                 )
 
+                _resultadoALaVez.value = exito
+                _carga.value = exito
+
             } catch (e: CancellationException) {
+                _carga.value = CargaUi.Error("Cancelado")
                 throw e
 
             } catch (e: Exception) {
@@ -244,6 +267,8 @@ class TareasViewModel(
                 _carga.value = CargaUi.Error(
                     "No se pudo cargar: ${e.message}"
                 )
+            } finally {
+                _cargandoModo.value = null
             }
         }
     }
