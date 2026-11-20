@@ -10,7 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -35,6 +35,7 @@ fun PantallaMapa(vm: MapaViewModel) {
     val radioSeleccionado by vm.radioSeleccionado.collectAsStateWithLifecycle()
     val seleccionadoId by vm.seleccionado.collectAsStateWithLifecycle()
     val masCercano by vm.masCercano.collectAsStateWithLifecycle()
+    val eventoAnimacion by vm.eventoAnimacion.collectAsStateWithLifecycle()
 
     val categorias = listOf("Todos", "Estudio", "Comida", "Eventos", "Servicios")
     val radios = listOf(0f to "Todos", 100f to "100m", 200f to "200m", 500f to "500m")
@@ -193,7 +194,7 @@ fun PantallaMapa(vm: MapaViewModel) {
                                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                                 ) {
-                                    Icon(imageVector = Icons.Default.LocationOn, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Icon(imageVector = Icons.Default.Place, contentDescription = null, modifier = Modifier.size(16.dp))
                                     Spacer(modifier = Modifier.width(4.dp))
                                     Text("Ir")
                                 }
@@ -222,6 +223,8 @@ fun PantallaMapa(vm: MapaViewModel) {
                     seleccionadoId = seleccionadoId,
                     masCercano = masCercano,
                     radioSeleccionado = radioSeleccionado,
+                    eventoAnimacion = eventoAnimacion,
+                    onAnimacionConsumida = { vm.consumirEventoAnimacion() },
                     onLugarClick = { id -> vm.seleccionar(id) },
                     modifier = Modifier.fillMaxSize()
                 )

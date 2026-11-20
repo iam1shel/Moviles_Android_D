@@ -2,6 +2,7 @@ package com.tecsup.campusgps.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.maps.model.LatLng
 import com.tecsup.campusgps.data.LugaresRepository
 import com.tecsup.campusgps.data.PreferenciasRepository
 import com.tecsup.campusgps.data.UbicacionRepository
@@ -57,10 +58,23 @@ class MapaViewModel(
     private val _masCercano = MutableStateFlow<Lugar?>(null)
     val masCercano: StateFlow<Lugar?> = _masCercano.asStateFlow()
 
+    private val _eventoAnimacion = MutableStateFlow<Pair<LatLng, Float>?>(null)
+    val eventoAnimacion: StateFlow<Pair<LatLng, Float>?> = _eventoAnimacion.asStateFlow()
+
+    fun consumirEventoAnimacion() {
+        _eventoAnimacion.value = null
+    }
+
     init {
         viewModelScope.launch {
             preferenciasRepo.ultimoLugarSeleccionado.collect { id ->
                 _seleccionado.value = id
+                if (id != null) {
+                    val lugarObj = lugaresRepo.obtenerLugares().find { it.id == id }
+                    if (lugarObj != null) {
+                        _eventoAnimacion.value = LatLng(lugarObj.latitud, lugarObj.longitud) to 17f
+                    }
+                }
             }
         }
     }
@@ -134,6 +148,13 @@ class MapaViewModel(
         _seleccionado.value = id
         viewModelScope.launch {
             preferenciasRepo.guardarUltimoLugar(id)
+        }
+        if (id != null) {
+            val lugarObj = lugares.value.find { it.lugar.id == id }?.lugar
+                ?: lugaresRepo.obtenerLugares().find { it.id == id }
+            if (lugarObj != null) {
+                _eventoAnimacion.value = LatLng(lugarObj.latitud, lugarObj.longitud) to 17f
+            }
         }
     }
 }

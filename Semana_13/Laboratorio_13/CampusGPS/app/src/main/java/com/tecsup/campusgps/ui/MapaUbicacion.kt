@@ -25,6 +25,8 @@ fun MapaUbicacion(
     seleccionadoId: Int?,
     masCercano: Lugar?,
     radioSeleccionado: Float,
+    eventoAnimacion: Pair<LatLng, Float>?,
+    onAnimacionConsumida: () -> Unit,
     onLugarClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -43,16 +45,13 @@ fun MapaUbicacion(
         }
     }
 
-    LaunchedEffect(seleccionadoId) {
-        if (seleccionadoId != null) {
-            val lugarEncontrado = lugares.find { it.lugar.id == seleccionadoId }?.lugar
-            if (lugarEncontrado != null) {
-                val lugarLatLng = LatLng(lugarEncontrado.latitud, lugarEncontrado.longitud)
-                cameraPositionState.animate(
-                    update = CameraUpdateFactory.newLatLngZoom(lugarLatLng, 17f),
-                    durationMs = 1000
-                )
-            }
+    LaunchedEffect(eventoAnimacion) {
+        eventoAnimacion?.let { (latLng, zoom) ->
+            cameraPositionState.animate(
+                update = CameraUpdateFactory.newLatLngZoom(latLng, zoom),
+                durationMs = 1000
+            )
+            onAnimacionConsumida()
         }
     }
 
