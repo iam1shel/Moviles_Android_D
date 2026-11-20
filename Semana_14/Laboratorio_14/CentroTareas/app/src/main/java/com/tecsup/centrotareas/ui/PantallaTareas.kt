@@ -286,11 +286,13 @@ fun PantallaTareas(vm: TareasViewModel) {
                         }
 
                         is CargaUi.Cargando -> {
-                            Box(
+                            Column(
                                 modifier = Modifier.fillMaxWidth(),
-                                contentAlignment = Alignment.Center
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 CircularProgressIndicator()
+                                Text(estado.mensaje)
                             }
                         }
 

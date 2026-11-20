@@ -8,6 +8,7 @@ import com.tecsup.centrotareas.model.CargaUi
 import com.tecsup.centrotareas.model.PrimosUi
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -136,11 +137,32 @@ class TareasViewModel(
         _simularError.value = valor
     }
 
+    private suspend fun <T> ejecutarConReintentos(block: suspend () -> T): T {
+        val maxReintentos = 3
+        var intento = 0
+        while (true) {
+            try {
+                if (intento == 0) {
+                    _carga.value = CargaUi.Cargando("Intentando cargar...")
+                } else {
+                    _carga.value = CargaUi.Cargando("Reintentando $intento de 3...")
+                }
+                return block()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                if (intento >= maxReintentos) {
+                    throw e
+                }
+                intento++
+                delay(1000L * intento)
+            }
+        }
+    }
+
     fun cargarUnaPorUna() {
 
         if (_carga.value is CargaUi.Cargando) return
-
-        _carga.value = CargaUi.Cargando
 
         viewModelScope.launch {
 
@@ -148,18 +170,19 @@ class TareasViewModel(
 
             try {
 
-                val perfil = repo.cargarPerfil()
-
-                val pedidos = repo.cargarPedidos(_simularError.value)
+                val resultado = ejecutarConReintentos {
+                    val perfil = repo.cargarPerfil()
+                    val pedidos = repo.cargarPedidos(_simularError.value)
+                    Pair(perfil, pedidos)
+                }
 
                 val tiempo = System.currentTimeMillis() - inicio
-
                 _tiempoUnaPorUna.value = tiempo
 
                 _carga.value = CargaUi.Exito(
                     modo = "Una por una",
-                    perfil = perfil,
-                    pedidos = pedidos.size,
+                    perfil = resultado.first,
+                    pedidos = resultado.second.size,
                     milisegundos = tiempo
                 )
 
@@ -179,32 +202,31 @@ class TareasViewModel(
 
         if (_carga.value is CargaUi.Cargando) return
 
-        _carga.value = CargaUi.Cargando
-
         viewModelScope.launch {
 
             val inicio = System.currentTimeMillis()
 
             try {
 
-                val resultado = coroutineScope {
+                val resultado = ejecutarConReintentos {
+                    coroutineScope {
 
-                    val perfil = async {
-                        repo.cargarPerfil()
+                        val perfil = async {
+                            repo.cargarPerfil()
+                        }
+
+                        val pedidos = async {
+                            repo.cargarPedidos(_simularError.value)
+                        }
+
+                        Pair(
+                            perfil.await(),
+                            pedidos.await()
+                        )
                     }
-
-                    val pedidos = async {
-                        repo.cargarPedidos(_simularError.value)
-                    }
-
-                    Pair(
-                        perfil.await(),
-                        pedidos.await()
-                    )
                 }
 
                 val tiempo = System.currentTimeMillis() - inicio
-
                 _tiempoALaVez.value = tiempo
 
                 _carga.value = CargaUi.Exito(

@@ -20,7 +20,9 @@ sealed interface CargaUi {
 
     data object Inicial : CargaUi
 
-    data object Cargando : CargaUi
+    data class Cargando(
+        val mensaje: String = "Cargando..."
+    ) : CargaUi
 
     data class Exito(
         val modo: String,
