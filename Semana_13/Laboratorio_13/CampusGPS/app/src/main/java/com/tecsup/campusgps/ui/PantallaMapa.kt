@@ -7,10 +7,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -47,7 +52,12 @@ fun PantallaMapa(vm: MapaViewModel) {
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("CampusGPS") }) }
+        topBar = {
+            TopAppBar(
+                title = { Text("CampusGPS", color = MaterialTheme.colorScheme.onPrimary) },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
+            )
+        }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -55,8 +65,9 @@ fun PantallaMapa(vm: MapaViewModel) {
                 .padding(padding)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            // Botón principal de ubicación
             Button(
                 onClick = {
                     val fine = ContextCompat.checkSelfPermission(
@@ -79,9 +90,14 @@ fun PantallaMapa(vm: MapaViewModel) {
                         )
                     }
                 },
-                enabled = estado !is UbicacionUi.Buscando
+                enabled = estado !is UbicacionUi.Buscando,
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                modifier = Modifier.fillMaxWidth().height(48.dp)
             ) {
-                Text("Obtener mi ubicación")
+                Icon(imageVector = Icons.Default.LocationOn, contentDescription = null, modifier = Modifier.size(20.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Obtener mi ubicación", style = MaterialTheme.typography.titleMedium)
             }
 
             // Filtros por Categoría
@@ -108,7 +124,7 @@ fun PantallaMapa(vm: MapaViewModel) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Radio:", style = MaterialTheme.typography.bodyMedium)
+                Text("Radio:", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 radios.forEach { (valor, etiqueta) ->
                     FilterChip(
                         selected = valor == radioSeleccionado,
@@ -120,37 +136,69 @@ fun PantallaMapa(vm: MapaViewModel) {
 
             when (val e = estado) {
                 UbicacionUi.Inicial -> {
-                    Text("CampusGPS · proyecto base. Presiona el botón para buscar tu ubicación.")
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            text = "Presiona 'Obtener mi ubicación' para comenzar a explorar el campus.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(12.dp)
+                        )
+                    }
                 }
                 UbicacionUi.Buscando -> {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(vertical = 4.dp)
                     ) {
                         CircularProgressIndicator(modifier = Modifier.size(24.dp))
-                        Text("Buscando...")
+                        Text("Buscando tu ubicación...", style = MaterialTheme.typography.bodyMedium)
                     }
                 }
                 is UbicacionUi.Lista -> {
                     if (masCercano != null) {
                         val lugarCercanoItem = lugares.find { it.lugar.id == masCercano?.id }
                         val distanciaStr = lugarCercanoItem?.metros?.let { formatearDistancia(it) } ?: ""
-                        Text(
-                            text = "Más cercano: ${masCercano?.nombre} ($distanciaStr)",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    } else {
-                        Text("Latitud: ${e.posicion.latitud}, Longitud: ${e.posicion.longitud}")
-                    }
-
-                    OutlinedButton(
-                        onClick = {
-                            masCercano?.let { vm.seleccionar(it.id) }
-                        },
-                        enabled = masCercano != null
-                    ) {
-                        Text("Ir al más cercano")
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = "Más cercano: ${masCercano?.nombre}",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                    Text(
+                                        text = "Distancia: $distanciaStr",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.secondary
+                                    )
+                                }
+                                Button(
+                                    onClick = { masCercano?.let { vm.seleccionar(it.id) } },
+                                    shape = RoundedCornerShape(8.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                                ) {
+                                    Icon(imageVector = Icons.Default.LocationOn, contentDescription = null, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text("Ir")
+                                }
+                            }
+                        }
                     }
                 }
                 is UbicacionUi.Error -> {
@@ -161,17 +209,23 @@ fun PantallaMapa(vm: MapaViewModel) {
                 }
             }
 
-            MapaUbicacion(
-                estado = estado,
-                lugares = lugaresFiltrados,
-                seleccionadoId = seleccionadoId,
-                masCercano = masCercano,
-                radioSeleccionado = radioSeleccionado,
-                onLugarClick = { id -> vm.seleccionar(id) },
+            // Mapa con esquinas redondeadas
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-            )
+                    .clip(RoundedCornerShape(16.dp))
+            ) {
+                MapaUbicacion(
+                    estado = estado,
+                    lugares = lugaresFiltrados,
+                    seleccionadoId = seleccionadoId,
+                    masCercano = masCercano,
+                    radioSeleccionado = radioSeleccionado,
+                    onLugarClick = { id -> vm.seleccionar(id) },
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
 
             ListaLugares(
                 lugares = lugaresFiltrados,
