@@ -26,6 +26,9 @@ class PostsViewModel(private val repository: PostRepository) : ViewModel() {
     private val _usuarioFiltro = MutableStateFlow<Int?>(null)
     val usuarioFiltro: StateFlow<Int?> = _usuarioFiltro.asStateFlow()
 
+    private val _queryBusqueda = MutableStateFlow("")
+    val queryBusqueda: StateFlow<String> = _queryBusqueda.asStateFlow()
+
     private val _detalle = MutableStateFlow<UiState<DetalleUi>>(UiState.Cargando)
     val detalle: StateFlow<UiState<DetalleUi>> = _detalle.asStateFlow()
 
@@ -34,6 +37,7 @@ class PostsViewModel(private val repository: PostRepository) : ViewModel() {
 
     private var currentDetalleId: Int? = null
     private var cargarJob: Job? = null
+    private var postsServidor: List<Post> = emptyList()
 
     init {
         cargar()
@@ -50,7 +54,12 @@ class PostsViewModel(private val repository: PostRepository) : ViewModel() {
                 repository.porUsuario(userId)
             }
             _lista.value = result.fold(
-                onSuccess = { UiState.Exito(it) },
+                onSuccess = { posts ->
+                    postsServidor = posts
+                    val query = _queryBusqueda.value
+                    val filtrados = if (query.isBlank()) posts else posts.filter { it.title.contains(query, ignoreCase = true) }
+                    UiState.Exito(filtrados)
+                },
                 onFailure = { UiState.Error(mensajeDe(it)) }
             )
         }
@@ -59,6 +68,16 @@ class PostsViewModel(private val repository: PostRepository) : ViewModel() {
     fun filtrar(userId: Int?) {
         _usuarioFiltro.value = userId
         cargar()
+    }
+
+    fun actualizarBusqueda(query: String) {
+        _queryBusqueda.value = query
+        val filtrados = if (query.isBlank()) {
+            postsServidor
+        } else {
+            postsServidor.filter { it.title.contains(query, ignoreCase = true) }
+        }
+        _lista.value = UiState.Exito(filtrados)
     }
 
     fun abrirDetalle(id: Int) {
