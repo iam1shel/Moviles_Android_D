@@ -35,6 +35,9 @@ class PostsViewModel(private val repository: PostRepository) : ViewModel() {
     private val _crearState = MutableStateFlow<UiState<Post>?>(null)
     val crearState: StateFlow<UiState<Post>?> = _crearState.asStateFlow()
 
+    private val _eliminarState = MutableStateFlow<UiState<Unit>?>(null)
+    val eliminarState: StateFlow<UiState<Unit>?> = _eliminarState.asStateFlow()
+
     private var currentDetalleId: Int? = null
     private var cargarJob: Job? = null
     private var postsServidor: List<Post> = emptyList()
@@ -119,5 +122,27 @@ class PostsViewModel(private val repository: PostRepository) : ViewModel() {
 
     fun resetCrear() {
         _crearState.value = null
+    }
+
+    fun eliminar(id: Int) {
+        if (_eliminarState.value is UiState.Cargando) return
+        viewModelScope.launch {
+            _eliminarState.value = UiState.Cargando
+            val result = repository.eliminar(id)
+            _eliminarState.value = result.fold(
+                onSuccess = {
+                    postsServidor = postsServidor.filter { it.id != id }
+                    val query = _queryBusqueda.value
+                    val filtrados = if (query.isBlank()) postsServidor else postsServidor.filter { it.title.contains(query, ignoreCase = true) }
+                    _lista.value = UiState.Exito(filtrados)
+                    UiState.Exito(Unit)
+                },
+                onFailure = { UiState.Error(mensajeDe(it)) }
+            )
+        }
+    }
+
+    fun resetEliminar() {
+        _eliminarState.value = null
     }
 }
