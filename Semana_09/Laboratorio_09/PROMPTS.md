@@ -1,0 +1,7 @@
+# Registro de Prompts e Interacción con IA — Laboratorio 09
+
+| Prompt que escribí | Qué respondió Gemini | Qué cambié o descarté | Por qué |
+|---|---|---|---|
+| "Implementa el Buscador de publicaciones por título en tiempo real con StateFlow y filtro combinado." | Sugirió un StateFlow combinado con operador `combine` de Flow. | Se adaptó para filtrar directamente sobre la lista caché en memoria (`postsServidor`) al actualizar la búsqueda, manteniendo sincronización inmediata y simplicidad con la UI. | Facilita la reactividad y evita sobrecargar operadores complejos de Flow innecesarios. |
+| "Crea un interceptor HTTP en OkHttp para agregar Accept: application/json a las peticiones." | Proveedor de código para un Interceptor genérico de OkHttp evaluando el header `Accept`. | Se mantuvo el código tal cual, añadiéndolo al `OkHttpClient.Builder` antes del `HttpLoggingInterceptor`. | Garantiza que todas las peticiones lleven el encabezado requerido sin duplicados. |
+| "Implementa la eliminación mediante DELETE en PostApi, Repository, ViewModel y PantallaDetalle con AlertDialog." | Generó las firmas con `Response<Unit>`, método en repositorio con `safeCall`, estado en ViewModel y diálogo de confirmación. | Se incorporó actualización temporal de la lista local tras éxito en el ViewModel para refrescar inmediatamente la UI sin requerir recarga de red. | Mejora la experiencia de usuario al reflejar instantáneamente la baja local a pesar de que el servidor mock no sea persistente. |
