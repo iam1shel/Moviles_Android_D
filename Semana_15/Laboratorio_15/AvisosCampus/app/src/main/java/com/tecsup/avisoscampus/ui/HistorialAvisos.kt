@@ -41,6 +41,7 @@ fun HistorialAvisos(avisos: List<Aviso>) {
                         Origen.BOTON -> Color(0xFF1976D2)
                         Origen.RECORDATORIO -> Color(0xFFD32F2F)
                         Origen.MODO_AVION -> Color(0xFF388E3C)
+                        Origen.CARGADOR -> Color(0xFFFF9800)
                     }
                     Column(
                         modifier = Modifier

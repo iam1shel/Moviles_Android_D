@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.tecsup.avisoscampus.model.PermisoUi
 import com.tecsup.avisoscampus.notificacion.Notificador
+import com.tecsup.avisoscampus.receiver.CargadorReceiver
 import com.tecsup.avisoscampus.receiver.ModoAvionReceiver
 import com.tecsup.avisoscampus.viewmodel.AvisosViewModel
 
@@ -32,6 +33,7 @@ fun PantallaAvisos(vm: AvisosViewModel) {
     val mensaje by vm.mensaje.collectAsState()
     val faltan by vm.faltan.collectAsState()
     val escuchandoAvion by vm.escuchandoAvion.collectAsState()
+    val escuchandoCargador by vm.escuchandoCargador.collectAsState()
     val avisos by vm.avisos.collectAsState()
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -61,6 +63,29 @@ fun PantallaAvisos(vm: AvisosViewModel) {
                 vm.alCambiarModoAvion(activo)
             }
             val filter = IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED)
+            ContextCompat.registerReceiver(
+                context,
+                receiver,
+                filter,
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
+            onDispose {
+                context.unregisterReceiver(receiver)
+            }
+        } else {
+            onDispose {}
+        }
+    }
+
+    DisposableEffect(escuchandoCargador) {
+        if (escuchandoCargador) {
+            val receiver = CargadorReceiver { conectado ->
+                vm.alCambiarCargador(conectado)
+            }
+            val filter = IntentFilter().apply {
+                addAction(Intent.ACTION_POWER_CONNECTED)
+                addAction(Intent.ACTION_POWER_DISCONNECTED)
+            }
             ContextCompat.registerReceiver(
                 context,
                 receiver,
@@ -238,6 +263,17 @@ fun PantallaAvisos(vm: AvisosViewModel) {
                         Switch(
                             checked = escuchandoAvion,
                             onCheckedChange = { vm.cambiarEscucha(it) }
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = "Escuchar conexión del cargador", modifier = Modifier.weight(1f))
+                        Switch(
+                            checked = escuchandoCargador,
+                            onCheckedChange = { vm.cambiarEscuchaCargador(it) }
                         )
                     }
                 }
