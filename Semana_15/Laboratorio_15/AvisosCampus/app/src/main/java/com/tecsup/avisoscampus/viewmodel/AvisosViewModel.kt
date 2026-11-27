@@ -46,6 +46,17 @@ class AvisosViewModel(private val repository: AvisosRepository) : ViewModel() {
         }
     }
 
+    fun avisarLargo() {
+        viewModelScope.launch {
+            val aviso = repository.registrar(
+                titulo = "Aviso extendido",
+                texto = "Este es un texto largo y detallado que se puede expandir al tocar la notificación para leer toda la información importante del campus universitario.",
+                origen = Origen.BOTON
+            )
+            _eventos.emit(aviso)
+        }
+    }
+
     private var trabajo: Job? = null
     private val _faltan = MutableStateFlow<Int?>(null)
     val faltan: StateFlow<Int?> = _faltan.asStateFlow()

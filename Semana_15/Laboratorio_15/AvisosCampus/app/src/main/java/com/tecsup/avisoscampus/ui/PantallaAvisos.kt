@@ -47,7 +47,8 @@ fun PantallaAvisos(vm: AvisosViewModel) {
 
     LaunchedEffect(Unit) {
         vm.eventos.collect { aviso ->
-            val mostrado = Notificador.mostrar(context, aviso)
+            val expandible = aviso.texto.length > 20
+            val mostrado = Notificador.mostrar(context, aviso, expandible)
             if (!mostrado) {
                 vm.noSePudoMostrar()
             }
@@ -167,6 +168,13 @@ fun PantallaAvisos(vm: AvisosViewModel) {
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text("Mostrar aviso")
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(
+                        onClick = { vm.avisarLargo() },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Mostrar aviso largo")
                     }
                 }
             }
